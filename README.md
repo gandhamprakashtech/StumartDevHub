@@ -1,18 +1,73 @@
-# React + Vite
+# Stumart Dev Hub
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React application built with Vite, React Router, and Tailwind CSS.
 
-Currently, two official plugins are available:
+## Prerequisites
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Node.js (version 18.x or higher)
+- npm
 
-## React Compiler
+## Installation
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+```bash
+npm install
+```
 
-Note: This will impact Vite dev & build performances.
+## Running the Project
 
-## Expanding the ESLint configuration
+### Development Mode
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```bash
+npm run dev
+```
+
+The application will be available at `http://localhost:5173`
+
+### Build for Production
+
+```bash
+npm run build
+```
+
+### Preview Production Build
+
+```bash
+npm run preview
+```
+
+## Available Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+- `npm run lint` - Run ESLint
+
+## Deployment to Vercel
+
+### Option 1: Using Vercel CLI
+
+1. Install Vercel CLI globally:
+   ```bash
+   npm i -g vercel
+   ```
+
+2. Deploy:
+   ```bash
+   vercel
+   ```
+
+3. Follow the prompts to complete deployment.
+
+### Option 2: Using Vercel Dashboard
+
+1. Push your code to GitHub/GitLab/Bitbucket
+2. Go to [vercel.com](https://vercel.com) and sign in
+3. Click "Add New Project"
+4. Import your repository
+5. Vercel will auto-detect Vite settings:
+   - **Build Command**: `npm run build`
+   - **Output Directory**: `dist`
+   - **Install Command**: `npm install`
+6. Click "Deploy"
+
+The `vercel.json` file is already configured for React Router client-side routing.
