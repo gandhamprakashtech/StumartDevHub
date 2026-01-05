@@ -6,7 +6,8 @@ export default function Register() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     pinNumber: '',
-    name: '',
+    firstname: '',
+    secondname:'',
     email: '',
     password: '',
     confirmPassword: '',
