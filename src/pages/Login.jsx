@@ -1,281 +1,182 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router';
-import { signIn, resendVerificationEmail } from '../services/authService';
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { signIn, resendVerificationEmail } from "../services/authService";
+
+/* Amazon-style animated input */
+const inputStyle =
+  "w-full mb-2 px-4 py-3 rounded-full border border-gray-300 outline-none " +
+  "transition-all duration-300 " +
+  "focus:border-indigo-500 " +
+  "focus:ring-4 focus:ring-indigo-400/40 " +
+  "hover:border-indigo-400";
 
 export default function Login() {
   const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
   });
+
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [showResendEmail, setShowResendEmail] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
-  const [resendMessage, setResendMessage] = useState('');
+  const [resendMessage, setResendMessage] = useState("");
 
-  /**
-   * Validate email format
-   */
-  const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
+  // email validation
+  const validateEmail = (email) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  /**
-   * Validate form data on frontend
-   */
-  const validateForm = () => {
-    const newErrors = {};
-
-    // Email validation
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!validateEmail(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
-    }
-
-    // Password validation
-    if (!formData.password) {
-      newErrors.password = 'Password is required';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  /**
-   * Handle form input changes
-   */
+  // handle input change
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-    // Clear error for this field when user starts typing
-    if (errors[name]) {
-      setErrors((prev) => ({
-        ...prev,
-        [name]: '',
-      }));
-    }
-    // Clear resend message when user changes email
-    if (name === 'email') {
-      setResendMessage('');
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: "" }));
+    if (name === "email") {
       setShowResendEmail(false);
+      setResendMessage("");
     }
   };
 
-  /**
-   * Handle form submission
-   */
+  // submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrors({});
-    setResendMessage('');
     setShowResendEmail(false);
 
-    // Validate form
-    if (!validateForm()) {
-      return;
+    if (!formData.email || !validateEmail(formData.email)) {
+      return setErrors({ email: "Enter a valid email" });
+    }
+    if (!formData.password) {
+      return setErrors({ password: "Password required" });
     }
 
     setIsLoading(true);
 
     try {
-      // Call signin service
       const result = await signIn(
-        formData.email.trim().toLowerCase(),
+        formData.email.toLowerCase(),
         formData.password
       );
 
       if (result.success) {
-        // Redirect to dashboard on successful login
-        navigate('/dashboard');
+        navigate("/dashboard");
       } else {
-        // Check if error is related to email verification
-        if (result.error && result.error.toLowerCase().includes('verify')) {
+        if (result.error?.toLowerCase().includes("verify")) {
           setShowResendEmail(true);
         }
-        // Show error message
         setErrors({ submit: result.error });
       }
-    } catch (error) {
-      setErrors({ submit: error.message || 'An unexpected error occurred' });
+    } catch (err) {
+      setErrors({ submit: "Something went wrong" });
     } finally {
       setIsLoading(false);
     }
   };
 
-  /**
-   * Handle resend verification email
-   */
+  // resend verification
   const handleResendVerification = async () => {
-    if (!formData.email.trim() || !validateEmail(formData.email)) {
-      setResendMessage('Please enter a valid email address');
-      return;
-    }
-
     setResendLoading(true);
-    setResendMessage('');
-
-    try {
-      const result = await resendVerificationEmail(formData.email.trim().toLowerCase());
-      
-      if (result.success) {
-        setResendMessage('Verification email sent! Please check your inbox.');
-      } else {
-        setResendMessage(result.error || 'Failed to resend verification email');
-      }
-    } catch (error) {
-      setResendMessage(error.message || 'An unexpected error occurred');
-    } finally {
-      setResendLoading(false);
-    }
+    const result = await resendVerificationEmail(formData.email);
+    setResendMessage(
+      result.success
+        ? "Verification email sent!"
+        : result.error || "Failed to resend"
+    );
+    setResendLoading(false);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Sign in to your  account          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Or{' '}
-            <Link
-              to="/register"
-              className="font-medium text-indigo-600 hover:text-indigo-500"
-            >
-              create a new student account
-            </Link>
-          </p>
-        </div>
+    /* 🔹 Code A logic preserved here */
+    <div className="h-screen flex flex-col">
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm -space-y-px">
-            {/* Email */}
-            <div>
-              <label htmlFor="email" className="sr-only">
-                Email address
-              </label>
+      {/* Code A heading */}
+      <h1 className="text-3xl font-bold p-4 text-center">
+        Login Page
+      </h1>
+
+      {/* Code B UI */}
+      <div className="flex-1 flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-500">
+        <div className="w-[900px] max-w-[95%] bg-white rounded-xl shadow-2xl overflow-hidden flex flex-col md:flex-row">
+
+          {/* LEFT */}
+          <div className="md:w-1/2 p-10 text-white bg-gradient-to-br from-indigo-500 to-pink-400 flex flex-col justify-center">
+            <h2 className="text-3xl font-bold mb-4">Welcome to Stumart</h2>
+            <p className="text-sm opacity-90">
+              Please login here.
+            </p>
+          </div>
+
+          {/* RIGHT */}
+          <div className="md:w-1/2 p-10 flex flex-col justify-center">
+            <h2 className="text-2xl font-semibold text-center text-indigo-600 mb-6">
+              User Login
+            </h2>
+
+            <form onSubmit={handleSubmit}>
               <input
-                id="email"
-                name="email"
                 type="email"
-                autoComplete="email"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Email address"
+                name="email"
+                placeholder="Email"
                 value={formData.email}
                 onChange={handleChange}
+                className={inputStyle}
               />
               {errors.email && (
-                <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                <p className="text-red-600 text-sm mb-2">{errors.email}</p>
               )}
-            </div>
 
-            {/* Password */}
-            <div>
-              <label htmlFor="password" className="sr-only">
-                Password
-              </label>
               <input
-                id="password"
-                name="password"
                 type="password"
-                autoComplete="current-password"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                name="password"
                 placeholder="Password"
                 value={formData.password}
                 onChange={handleChange}
+                className={inputStyle}
               />
               {errors.password && (
-                <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+                <p className="text-red-600 text-sm mb-2">{errors.password}</p>
               )}
-            </div>
-          </div>
 
-          {/* Resend Verification Email Section */}
-          {showResendEmail && (
-            <div className="rounded-md bg-yellow-50 p-4 border border-yellow-200">
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <svg
-                    className="h-5 w-5 text-yellow-400"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </div>
-                <div className="ml-3 flex-1">
-                  <p className="text-sm font-medium text-yellow-800 mb-2">
-                    Your email is not verified. Please verify your email to continue.
-                  </p>
+              {errors.submit && (
+                <p className="text-red-600 text-sm mb-3">{errors.submit}</p>
+              )}
+
+              {showResendEmail && (
+                <div className="bg-yellow-100 p-3 rounded mb-3 text-sm">
+                  Email not verified.
                   <button
                     type="button"
                     onClick={handleResendVerification}
                     disabled={resendLoading}
-                    className="text-sm font-medium text-yellow-800 hover:text-yellow-900 underline disabled:opacity-50"
+                    className="underline ml-2"
                   >
-                    {resendLoading ? 'Sending...' : 'Resend verification email'}
+                    {resendLoading ? "Sending..." : "Resend"}
                   </button>
                   {resendMessage && (
-                    <p className={`mt-2 text-sm ${
-                      resendMessage.includes('sent') 
-                        ? 'text-green-700' 
-                        : 'text-red-700'
-                    }`}>
-                      {resendMessage}
-                    </p>
+                    <p className="mt-1 text-green-700">{resendMessage}</p>
                   )}
                 </div>
-              </div>
-            </div>
-          )}
+              )}
 
-          {/* Error Message */}
-          {errors.submit && (
-            <div className="rounded-md bg-red-50 p-4">
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <svg
-                    className="h-5 w-5 text-red-400"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-red-800">
-                    {errors.submit}
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full py-3 mt-2 rounded-full text-white font-semibold bg-gradient-to-r from-indigo-500 to-pink-400 disabled:opacity-50"
+              >
+                {isLoading ? "Logging in..." : "LOGIN"}
+              </button>
+            </form>
 
-          <div>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isLoading ? 'Signing in...' : 'Sign in'}
-            </button>
+            <p className="text-center text-sm mt-4">
+              New user?{" "}
+              <Link to="/register" className="text-indigo-600 underline">
+                Create account
+              </Link>
+            </p>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );
