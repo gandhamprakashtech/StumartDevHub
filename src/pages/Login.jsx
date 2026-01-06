@@ -88,84 +88,94 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-500">
-      <div className="w-[900px] max-w-[95%] bg-white rounded-xl shadow-2xl overflow-hidden flex flex-col md:flex-row">
+    /* 🔹 Code A logic preserved here */
+    <div className="h-screen flex flex-col">
 
-        {/* LEFT */}
-        <div className="md:w-1/2 p-10 text-white bg-gradient-to-br from-indigo-500 to-pink-400 flex flex-col justify-center">
-          <h1 className="text-3xl font-bold mb-4">Welcome to Stumart</h1>
-          <p className="text-sm opacity-90">
-            Please login here.
-          </p>
-        </div>
+      {/* Code A heading */}
+      <h1 className="text-3xl font-bold p-4 text-center">
+        Login Page
+      </h1>
 
-        {/* RIGHT */}
-        <div className="md:w-1/2 p-10 flex flex-col justify-center">
-          <h2 className="text-2xl font-semibold text-center text-indigo-600 mb-6">
-            User Login
-          </h2>
+      {/* Code B UI */}
+      <div className="flex-1 flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-500">
+        <div className="w-[900px] max-w-[95%] bg-white rounded-xl shadow-2xl overflow-hidden flex flex-col md:flex-row">
 
-          <form onSubmit={handleSubmit}>
-            <input
-              type="email"
-              name="email"
-              placeholder="Email"
-              value={formData.email}
-              onChange={handleChange}
-              className={inputStyle}
-            />
-            {errors.email && (
-              <p className="text-red-600 text-sm mb-2">{errors.email}</p>
-            )}
+          {/* LEFT */}
+          <div className="md:w-1/2 p-10 text-white bg-gradient-to-br from-indigo-500 to-pink-400 flex flex-col justify-center">
+            <h2 className="text-3xl font-bold mb-4">Welcome to Stumart</h2>
+            <p className="text-sm opacity-90">
+              Please login here.
+            </p>
+          </div>
 
-            <input
-              type="password"
-              name="password"
-              placeholder="Password"
-              value={formData.password}
-              onChange={handleChange}
-              className={inputStyle}
-            />
-            {errors.password && (
-              <p className="text-red-600 text-sm mb-2">{errors.password}</p>
-            )}
+          {/* RIGHT */}
+          <div className="md:w-1/2 p-10 flex flex-col justify-center">
+            <h2 className="text-2xl font-semibold text-center text-indigo-600 mb-6">
+              User Login
+            </h2>
 
-            {errors.submit && (
-              <p className="text-red-600 text-sm mb-3">{errors.submit}</p>
-            )}
+            <form onSubmit={handleSubmit}>
+              <input
+                type="email"
+                name="email"
+                placeholder="Email"
+                value={formData.email}
+                onChange={handleChange}
+                className={inputStyle}
+              />
+              {errors.email && (
+                <p className="text-red-600 text-sm mb-2">{errors.email}</p>
+              )}
 
-            {showResendEmail && (
-              <div className="bg-yellow-100 p-3 rounded mb-3 text-sm">
-                Email not verified.
-                <button
-                  type="button"
-                  onClick={handleResendVerification}
-                  disabled={resendLoading}
-                  className="underline ml-2"
-                >
-                  {resendLoading ? "Sending..." : "Resend"}
-                </button>
-                {resendMessage && (
-                  <p className="mt-1 text-green-700">{resendMessage}</p>
-                )}
-              </div>
-            )}
+              <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+                className={inputStyle}
+              />
+              {errors.password && (
+                <p className="text-red-600 text-sm mb-2">{errors.password}</p>
+              )}
 
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full py-3 mt-2 rounded-full text-white font-semibold bg-gradient-to-r from-indigo-500 to-pink-400 disabled:opacity-50"
-            >
-              {isLoading ? "Logging in..." : "LOGIN"}
-            </button>
-          </form>
+              {errors.submit && (
+                <p className="text-red-600 text-sm mb-3">{errors.submit}</p>
+              )}
 
-          <p className="text-center text-sm mt-4">
-            New user?{" "}
-            <Link to="/register" className="text-indigo-600 underline">
-              Create account
-            </Link>
-          </p>
+              {showResendEmail && (
+                <div className="bg-yellow-100 p-3 rounded mb-3 text-sm">
+                  Email not verified.
+                  <button
+                    type="button"
+                    onClick={handleResendVerification}
+                    disabled={resendLoading}
+                    className="underline ml-2"
+                  >
+                    {resendLoading ? "Sending..." : "Resend"}
+                  </button>
+                  {resendMessage && (
+                    <p className="mt-1 text-green-700">{resendMessage}</p>
+                  )}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full py-3 mt-2 rounded-full text-white font-semibold bg-gradient-to-r from-indigo-500 to-pink-400 disabled:opacity-50"
+              >
+                {isLoading ? "Logging in..." : "LOGIN"}
+              </button>
+            </form>
+
+            <p className="text-center text-sm mt-4">
+              New user?{" "}
+              <Link to="/register" className="text-indigo-600 underline">
+                Create account
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>
