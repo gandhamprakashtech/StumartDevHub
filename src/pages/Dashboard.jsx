@@ -40,23 +40,24 @@ export default function Dashboard() {
    * Handle logout
    */
   const handleLogout = async () => {
-    setIsLoggingOut(true);
-    try {
-      const result = await signOut();
-      if (result.success) {
-        navigate('/login');
-      } else {
-        console.error('Logout error:', result.error);
-        // Still redirect to login even if logout has an error
-        navigate('/login');
-      }
-    } catch (error) {
-      console.error('Logout error:', error);
-      navigate('/login');
-    } finally {
-      setIsLoggingOut(false);
-    }
-  };
+  const confirmLogout = window.confirm("Are you sure you want to logout?");
+
+  if (!confirmLogout) {
+    return;
+  }
+
+  setIsLoggingOut(true);
+
+  try {
+    await signOut();
+    navigate('/login');
+  } catch (error) {
+    console.error('Logout error:', error);
+    navigate('/login');
+  } finally {
+    setIsLoggingOut(false);
+  }
+};
 
   // Show loading state
   if (isLoading) {
@@ -89,13 +90,6 @@ export default function Dashboard() {
                 Welcome back, {student.name}!
               </p>
             </div>
-            <button
-              onClick={handleLogout}
-              disabled={isLoggingOut}
-              className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isLoggingOut ? 'Logging out...' : 'Logout'}
-            </button>
           </div>
         </div>
 

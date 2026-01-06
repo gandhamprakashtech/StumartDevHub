@@ -7,6 +7,8 @@ export default function Navbar() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [student, setStudent] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -46,7 +48,12 @@ export default function Navbar() {
     };
   }, []);
 
-  const handleLogout = async () => {
+  const handleLogoutClick = () => {
+    setShowConfirmModal(true);
+  };
+
+  const confirmLogout = async () => {
+    setIsLoggingOut(true);
     try {
       await signOut();
       setIsAuthenticated(false);
@@ -54,7 +61,14 @@ export default function Navbar() {
       navigate('/login');
     } catch (error) {
       console.error('Logout error:', error);
+    } finally {
+      setIsLoggingOut(false);
+      setShowConfirmModal(false);
     }
+  };
+
+  const cancelLogout = () => {
+    setShowConfirmModal(false);
   };
 
   return (
@@ -85,7 +99,7 @@ export default function Navbar() {
                 </span>
               )}
               <button
-                onClick={handleLogout}
+                onClick={handleLogoutClick}
                 className="hover:text-black cursor-pointer"
               >
                 Logout
@@ -103,6 +117,31 @@ export default function Navbar() {
           )}
         </div>
       </div>
+
+      {/* Confirmation Modal */}
+      {showConfirmModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full mx-4">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">Confirm Logout</h2>
+            <p className="text-gray-600 mb-6">Are you sure you want to logout?</p>
+            <div className="flex gap-4 justify-end">
+              <button
+                onClick={cancelLogout}
+                className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 focus:outline-none"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmLogout}
+                disabled={isLoggingOut}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoggingOut ? 'Logging out...' : 'Logout'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   );
 }
