@@ -5,6 +5,7 @@ export default function Products() {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -43,6 +44,35 @@ export default function Products() {
     // Placeholder image if no images
     return 'https://via.placeholder.com/400x300?text=No+Image';
   };
+
+  // Handle image click to show fullscreen
+  const handleImageClick = (imageUrl) => {
+    setSelectedImage(imageUrl);
+  };
+
+  // Close fullscreen image
+  const handleCloseImage = () => {
+    setSelectedImage(null);
+  };
+
+  // Close on Escape key
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') {
+        handleCloseImage();
+      }
+    };
+
+    if (selectedImage) {
+      document.addEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'unset';
+    };
+  }, [selectedImage]);
 
   // Loading state
   if (isLoading) {
@@ -123,11 +153,9 @@ export default function Products() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-            Browse All Products
+            All Products
           </h1>
-          <p className="text-gray-600">
-            Discover products from students across all branches
-          </p>
+          
         </div>
 
         {/* Products Grid */}
@@ -138,7 +166,10 @@ export default function Products() {
               className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200 cursor-pointer"
             >
               {/* Product Image */}
-              <div className="relative h-48 w-full bg-gray-200">
+              <div 
+                className="relative h-48 w-full bg-gray-200 cursor-pointer"
+                onClick={() => handleImageClick(getFirstImage(product.image_urls))}
+              >
                 <img
                   src={getFirstImage(product.image_urls)}
                   alt={product.title}
@@ -168,6 +199,50 @@ export default function Products() {
           <p>Showing {products.length} product{products.length !== 1 ? 's' : ''}</p>
         </div>
       </div>
+
+      {/* Fullscreen Image Modal */}
+      {selectedImage && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90 p-4"
+          onClick={handleCloseImage}
+        >
+          {/* Close Button */}
+          <button
+            onClick={handleCloseImage}
+            className="absolute top-4 right-4 z-10 text-white hover:text-gray-300 transition-colors bg-black bg-opacity-50 rounded-full p-2 hover:bg-opacity-70"
+            aria-label="Close image"
+          >
+            <svg
+              className="w-8 h-8"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+
+          {/* Image Container */}
+          <div
+            className="relative max-w-7xl max-h-full"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={selectedImage}
+              alt="Product fullscreen"
+              className="max-w-full max-h-[90vh] object-contain rounded-lg"
+              onError={(e) => {
+                e.target.src = 'https://via.placeholder.com/800x600?text=Image+Not+Found';
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
