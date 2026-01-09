@@ -16,6 +16,12 @@ export default function Home() {
             Your one-stop solution for all student needs in your college. Simplify your academic
             journey with us.
           </p>
+          <Link
+            to="/products"
+            className="inline-block px-8 py-4 bg-indigo-600 text-white text-lg font-semibold rounded-lg hover:bg-indigo-700 transition-colors shadow-lg hover:shadow-xl transform hover:scale-105 transition-transform"
+          >
+            Get Started
+          </Link>
         </div>
       </section>
     </div>
