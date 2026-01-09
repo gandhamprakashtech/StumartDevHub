@@ -7,6 +7,21 @@ import { supabase } from './supabaseClient';
  */
 
 /**
+ * Get the base URL for email redirects
+ * Uses VITE_APP_URL environment variable if set, otherwise falls back to window.location.origin
+ * This ensures production URLs are used even when signup happens on localhost
+ */
+const getBaseUrl = () => {
+  // Use environment variable if set (for production)
+  const envUrl = import.meta.env.VITE_APP_URL;
+  if (envUrl) {
+    return envUrl;
+  }
+  // Fallback to current origin (for development)
+  return window.location.origin;
+};
+
+/**
  * Sign up a new student
  * @param {Object} studentData - Student registration data
  * @param {string} studentData.pinNumber - Unique PIN number (primary key)
@@ -22,7 +37,7 @@ export const signUp = async ({ pinNumber, name, email, password }) => {
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/login`,
+        emailRedirectTo: `${getBaseUrl()}/login`,
       },
     });
 
@@ -298,7 +313,7 @@ export const resendVerificationEmail = async (email) => {
       type: 'signup',
       email: email,
       options: {
-        emailRedirectTo: `${window.location.origin}/login`,
+        emailRedirectTo: `${getBaseUrl()}/login`,
       },
     });
 

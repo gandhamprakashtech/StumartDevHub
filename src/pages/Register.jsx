@@ -25,11 +25,68 @@ export default function Register() {
   const validateEmail = (email) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
+  /**
+   * Validate PIN Number
+   * Format: XX030-BRANCH-XXX
+   * - First 5 digits must end with 030 (college identifier)
+   * - Branch code: 1+ uppercase letters
+   * - Last 3 digits: exactly 3 digits
+   */
+  const validatePinNumber = (pinNumber) => {
+    const trimmed = pinNumber.trim();
+
+    if (!trimmed) {
+      return 'PIN number is required';
+    }
+
+    // Check format: XX030-BRANCH-XXX
+    const pinPattern = /^[0-9]{2}030-[A-Z]+-[0-9]{3}$/;
+    
+    if (!pinPattern.test(trimmed)) {
+      // Provide more specific error messages
+      const parts = trimmed.split('-');
+      
+      if (parts.length !== 3) {
+        return 'Invalid format. Expected: XX030-BRANCH-XXX (e.g., 23030-CM-048)';
+      }
+      
+      const [firstPart, branchPart, lastPart] = parts;
+      
+      // Check first part
+      if (!/^[0-9]{5}$/.test(firstPart)) {
+        return 'First part must be exactly 5 digits';
+      }
+      
+      if (!firstPart.endsWith('030')) {
+        return 'First 5 digits must end with 030 (college identifier)';
+      }
+      
+      // Check branch part
+      if (!/^[A-Z]+$/.test(branchPart)) {
+        if (/^[a-z]+$/.test(branchPart)) {
+          return 'Branch code must be uppercase (e.g., CM, M, EC)';
+        }
+        return 'Branch code must contain only uppercase letters';
+      }
+      
+      // Check last part
+      if (!/^[0-9]{3}$/.test(lastPart)) {
+        return 'Last part must be exactly 3 digits';
+      }
+      
+      return 'Invalid PIN format. Expected: XX030-BRANCH-XXX (e.g., 23030-CM-001)';
+    }
+
+    return null; // Valid
+  };
+
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.pinNumber.trim())
-      newErrors.pinNumber = 'PIN number is required';
+    const pinError = validatePinNumber(formData.pinNumber);
+    if (pinError) {
+      newErrors.pinNumber = pinError;
+    }
 
     if (!formData.name.trim())
       newErrors.name = 'Student name is required';
@@ -56,7 +113,25 @@ export default function Register() {
   /* ---------- Handlers ---------- */
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((p) => ({ ...p, [name]: value }));
+    
+    // Auto-format PIN number: convert branch code to uppercase
+    let processedValue = value;
+    if (name === 'pinNumber') {
+      // Split by dashes and uppercase the branch code part
+      const parts = value.split('-');
+      if (parts.length >= 2) {
+        // Uppercase the branch code (middle part)
+        parts[1] = parts[1].toUpperCase();
+        processedValue = parts.join('-');
+      } else if (parts.length === 1 && value.includes('-')) {
+        // Handle case where user is typing in branch section
+        const beforeDash = value.substring(0, value.lastIndexOf('-') + 1);
+        const afterDash = value.substring(value.lastIndexOf('-') + 1);
+        processedValue = beforeDash + afterDash.toUpperCase();
+      }
+    }
+    
+    setFormData((p) => ({ ...p, [name]: processedValue }));
     setErrors((p) => ({ ...p, [name]: '' }));
   };
 
@@ -127,6 +202,11 @@ export default function Register() {
               ${errors.pinNumber ? 'text-red-600 bg-red-50' : 'text-indigo-500 bg-white/10 peer-placeholder-shown:text-gray-600 peer-focus:text-indigo-500'}`}>
               PIN Number
             </label>
+            {!errors.pinNumber && formData.pinNumber && (
+              <div className="absolute left-4 top-full mt-1 text-xs text-gray-500">
+                Format: XX030-BRANCH-XXX (e.g., 23030-CM-001)
+              </div>
+            )}
             {errors.pinNumber && (
               <div className="absolute left-4 top-full mt-3 z-50 bg-red-200 border border-red-400 text-red-900 text-sm px-3 py-1 rounded shadow-md animate-popup">
                 {errors.pinNumber}
