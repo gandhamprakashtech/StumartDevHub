@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, Link } from 'react-router';
 import { signOut, getCurrentUser } from '../services/authService';
 
 export default function Dashboard() {
@@ -90,6 +90,12 @@ export default function Dashboard() {
                 Welcome back, {student.name}!
               </p>
             </div>
+            <Link
+              to="/create-post"
+              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium"
+            >
+              + Create Post
+            </Link>
           </div>
         </div>
 
