@@ -71,3 +71,36 @@ npm run preview
 6. Click "Deploy"
 
 The `vercel.json` file is already configured for React Router client-side routing.
+
+## Database Setup (Supabase)
+
+### 1. Run SQL Schemas
+
+Run these SQL files in Supabase SQL Editor (in order):
+
+1. **`supabase-schema.sql`** - Creates `students` table
+2. **`supabase-products-schema.sql`** - Creates `products` table
+3. **`supabase-storage-policies.sql`** - Sets up storage bucket policies
+
+### 2. Create Storage Bucket
+
+1. Go to Supabase Dashboard → Storage
+2. Create bucket: `product-images`
+3. Make it **PUBLIC**
+4. Run `supabase-storage-policies.sql` to set policies
+
+### 3. Environment Variables
+
+Create `.env` file:
+```
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+## Features
+
+- User authentication with email verification
+- Student registration with PIN validation
+- Post creation with image uploads
+- Products linked to user profiles
+- Branch and category filtering
