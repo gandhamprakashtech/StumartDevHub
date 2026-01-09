@@ -20,7 +20,7 @@ export default function Home() {
             to="/products"
             className="inline-block px-8 py-4 bg-indigo-600 text-white text-lg font-semibold rounded-lg hover:bg-indigo-700 transition-colors shadow-lg hover:shadow-xl transform hover:scale-105 transition-transform"
           >
-            Get Started
+            View Products
           </Link>
         </div>
       </section>
