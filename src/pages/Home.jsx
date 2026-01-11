@@ -26,4 +26,6 @@ export default function Home() {
       </section>
     </div>
   );
+  <script type="module" src="/auth.js"></script>
+
 }

@@ -10,4 +10,6 @@ export default function Layout() {
       <Footer />
     </>
   );
+  <script type="module" src="/auth.js"></script>
+
 }

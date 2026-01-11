@@ -245,5 +245,7 @@ export default function Products() {
       )}
     </div>
   );
+  <script type="module" src="/auth.js"></script>
+
 }
 
