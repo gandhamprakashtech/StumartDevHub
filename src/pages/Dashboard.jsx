@@ -177,5 +177,6 @@ export default function Dashboard() {
       </div>
     </div>
   );
+  <script type="module" src="/auth.js"></script>
 }
 

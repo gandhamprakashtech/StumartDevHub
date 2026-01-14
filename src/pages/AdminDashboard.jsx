@@ -15,6 +15,7 @@ export default function AdminDashboard() {
   });
   const [statsLoading, setStatsLoading] = useState(true);
 
+
   /**
    * Load current admin data and statistics
    */
@@ -260,6 +261,7 @@ export default function AdminDashboard() {
       </div>
     </div>
   );
+  <script type="module" src="/auth.js"></script>
 }
 
 

@@ -8,6 +8,9 @@ import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
+import ForgotPassword from "./pages/ForgotPassword";
+
+
 
 export const routes = [
   {
@@ -53,5 +56,9 @@ export const routes = [
         <AdminDashboard />
       </ProtectedAdminRoute>
     ),
+  },
+  {
+    path: "/forgot-password",
+    element: <ForgotPassword />,
   },
 ];

@@ -29,7 +29,7 @@ export const createProduct = async (productData) => {
         error: 'User not authenticated. Please log in to create a post.',
       };
     }
-
+    
     // Validate required fields
     if (!productData.category || !productData.title || !productData.description || productData.price === undefined) {
       return {
