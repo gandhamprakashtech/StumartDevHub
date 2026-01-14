@@ -9,7 +9,7 @@ export default function Products() {
 
   useEffect(() => {
     const fetchProducts = async () => {
-      setIsLoading(true);
+      setIsLoading(true); 
       setError(null);
 
       try {
@@ -199,51 +199,31 @@ export default function Products() {
           <p>Showing {products.length} product{products.length !== 1 ? 's' : ''}</p>
         </div>
       </div>
-
       {/* Fullscreen Image Modal */}
       {selectedImage && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90 p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
           onClick={handleCloseImage}
         >
           {/* Close Button */}
           <button
             onClick={handleCloseImage}
-            className="absolute top-4 right-4 z-10 text-white hover:text-gray-300 transition-colors bg-black bg-opacity-50 rounded-full p-2 hover:bg-opacity-70"
-            aria-label="Close image"
+            className="absolute top-4 right-4 text-white text-2xl font-semibold hover:text-gray-300 cursor-pointer z-50"
+            aria-label="Close"
           >
-            <svg
-              className="w-8 h-8"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
+            ✕
           </button>
 
-          {/* Image Container */}
-          <div
-            className="relative max-w-7xl max-h-full"
+          <img
+            src={selectedImage}
+            alt="Fullscreen product"
+            className="max-h-full max-w-full rounded"
             onClick={(e) => e.stopPropagation()}
-          >
-            <img
-              src={selectedImage}
-              alt="Product fullscreen"
-              className="max-w-full max-h-[90vh] object-contain rounded-lg"
-              onError={(e) => {
-                e.target.src = 'https://via.placeholder.com/800x600?text=Image+Not+Found';
-              }}
-            />
-          </div>
+          />
         </div>
       )}
     </div>
   );
 }
+
 

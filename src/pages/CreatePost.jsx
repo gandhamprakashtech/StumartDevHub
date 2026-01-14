@@ -584,5 +584,6 @@ export default function CreatePost() {
       </div>
     </div>
   );
+  <script type="module" src="/auth.js"></script>
 }
 

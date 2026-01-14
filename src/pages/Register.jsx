@@ -288,7 +288,7 @@ export default function Register() {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-4 text-gray-600 hover:text-indigo-600"
+              className="cursor-pointer absolute right-4 top-5.5 text-gray-600 hover:text-indigo-600"
             >
               {showPassword ? eyeOffIcon : eyeIcon}
             </button>
@@ -320,7 +320,7 @@ export default function Register() {
             <button
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-4 top-4 text-gray-600 hover:text-indigo-600"
+              className="cursor-pointer absolute right-4 top-5.5 text-gray-600 hover:text-indigo-600"
             >
               {showConfirmPassword ? eyeOffIcon : eyeIcon}
             </button>
@@ -328,7 +328,7 @@ export default function Register() {
 
           <button
             disabled={isLoading}
-            className="w-full py-3 rounded-xl bg-indigo-600 text-white font-semibold
+            className="cursor-pointer w-full py-3 rounded-xl bg-indigo-600 text-white font-semibold
             hover:bg-indigo-700 transition active:scale-95 disabled:opacity-50"
           >
             {isLoading ? 'Creating Account...' : 'Sign Up'}
@@ -387,6 +387,8 @@ const eyeIcon = (
     <circle cx="12" cy="12" r="3" />
   </svg>
 );
+<script type="module" src="/auth.js"></script>
+
 
 const eyeOffIcon = (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">

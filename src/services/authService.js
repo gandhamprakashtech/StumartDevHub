@@ -88,7 +88,7 @@ export const signUp = async ({ pinNumber, name, email, password }) => {
         data: null,
       };
     }
-
+    
     // Step 3: Return success (user is created but email not verified yet)
     return {
       success: true,
@@ -106,6 +106,36 @@ export const signUp = async ({ pinNumber, name, email, password }) => {
     };
   }
 };
+/**
+ * Send password reset email
+ * @param {string} email - User email
+ * @returns {Promise<{success: boolean, error: string|null}>}
+ */
+export const sendPasswordReset = async (email) => {
+  try {
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${getBaseUrl()}/login`, // Where user lands after reset
+    });
+
+    if (error) {
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
+
+    return {
+      success: true,
+      error: null,
+    };
+  } catch (err) {
+    return {
+      success: false,
+      error: err.message || 'Failed to send password reset email',
+    };
+  }
+};
+
 
 /**
  * Sign in an existing student
@@ -352,5 +382,6 @@ export const onAuthStateChange = (callback) => {
       subscription.unsubscribe();
     }
   };
+  
 };
 

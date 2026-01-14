@@ -9,7 +9,7 @@ export default function Home() {
           <h1 className="text-5xl md:text-7xl font-extrabold text-gray-900 mb-6 leading-tight">
             Welcome to{" "}
             <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              StuMart  web application
+              StuMart web application
             </span>
           </h1>
           <p className="text-xl md:text-2xl text-gray-600 mb-10 max-w-2xl mx-auto">
@@ -26,4 +26,6 @@ export default function Home() {
       </section>
     </div>
   );
+  <script type="module" src="/auth.js"></script>
+
 }

@@ -190,6 +190,7 @@ export default function AdminLogin() {
       </div>
     </div>
   );
+  <script type="module" src="/auth.js"></script>
 }
 
 
