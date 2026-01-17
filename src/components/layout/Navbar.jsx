@@ -93,6 +93,9 @@ export default function Navbar() {
               <Link to="/dashboard" className="hover:text-black">
                 Dashboard
               </Link>
+              <Link to="/account-settings" className="hover:text-black">
+                Account Settings
+              </Link>
               {student && (
                 <span className="text-sm text-gray-500">
                   {student.name}

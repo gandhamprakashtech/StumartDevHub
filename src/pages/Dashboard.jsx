@@ -90,12 +90,20 @@ export default function Dashboard() {
                 Welcome back, {student.name}!
               </p>
             </div>
-            <Link
-              to="/create-post"
-              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium"
-            >
-              + Create Post
-            </Link>
+            <div className="flex gap-4">
+              <Link
+                to="/account-settings"
+                className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium"
+              >
+                Account Settings
+              </Link>
+              <Link
+                to="/create-post"
+                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium"
+              >
+                + Create Post
+              </Link>
+            </div>
           </div>
         </div>
 
