@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { signIn, resendVerificationEmail } from '../services/authService';
-import { useNavigate, Link } from "react-router-dom";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { useNavigate, Link } from "react-router";
 
 
 
@@ -345,7 +344,5 @@ export default function Login() {
         </form>
       </div>
     </div>
-    
   );
-  <script type="module" src="/auth.js"></script>
 }
