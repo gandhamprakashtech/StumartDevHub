@@ -173,7 +173,7 @@ export const getProducts = async (filters = {}) => {
 };
 
 /**
- * Get a single product by ID
+ * Get a single product by ID with seller information
  * @param {string} productId - Product ID
  * @returns {Promise<{success: boolean, data: Object|null, error: string|null}>}
  */
@@ -181,7 +181,14 @@ export const getProductById = async (productId) => {
   try {
     const { data, error } = await supabase
       .from('products')
-      .select('*')
+      .select(`
+        *,
+        students:student_pin_number (
+          name,
+          pin_number,
+          email
+        )
+      `)
       .eq('id', productId)
       .single();
 
