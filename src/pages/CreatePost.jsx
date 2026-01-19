@@ -243,9 +243,9 @@ export default function CreatePost() {
         // Cleanup image previews
         imagePreviews.forEach((preview) => revokeImagePreview(preview));
 
-        // Redirect to dashboard after 2 seconds
+        // Redirect to Profile page after 2 seconds
         setTimeout(() => {
-          navigate('/dashboard');
+          navigate('/Profile');
         }, 2000);
       } else {
         setSubmitError(result.error || 'Failed to create post. Please try again.');
@@ -566,7 +566,7 @@ export default function CreatePost() {
           <div className="flex justify-end space-x-4 pt-4">
             <button
               type="button"
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate('/Profile')}
               disabled={isSubmitting}
               className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >

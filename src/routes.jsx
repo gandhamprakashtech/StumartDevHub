@@ -1,7 +1,6 @@
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Dashboard from "./pages/Dashboard";
 import CreatePost from "./pages/CreatePost";
 import Products from "./pages/Products";
 import ProductDetail from "./pages/ProductDetail";
@@ -10,6 +9,8 @@ import AdminDashboard from "./pages/AdminDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
 import ForgotPassword from "./pages/ForgotPassword";
+import Profile from "./pages/Profile";
+import MyPosts from "./pages/MyPosts";
 
 
 
@@ -35,10 +36,10 @@ export const routes = [
     element: <Register />,
   },
   {
-    path: "/dashboard",
+    path: "/Profile",
     element: (
       <ProtectedRoute>
-        <Dashboard />
+        <Profile />
       </ProtectedRoute>
     ),
   },
@@ -47,6 +48,14 @@ export const routes = [
     element: (
       <ProtectedRoute>
         <CreatePost />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/MyPosts",
+    element: (
+      <ProtectedRoute>
+        <MyPosts />
       </ProtectedRoute>
     ),
   },
