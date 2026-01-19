@@ -97,8 +97,8 @@ export default function Login() {
       );
 
       if (result.success) {
-        // Redirect to dashboard on successful login
-        navigate('/dashboard');
+        // Redirect to Profile page on successful login
+        navigate('/Profile');
       } else {
         // Check if error is related to email verification
         if (result.error && result.error.toLowerCase().includes('verify')) {
