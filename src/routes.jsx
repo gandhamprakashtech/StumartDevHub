@@ -4,6 +4,7 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import CreatePost from "./pages/CreatePost";
 import Products from "./pages/Products";
+import ProductDetail from "./pages/ProductDetail";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -20,6 +21,10 @@ export const routes = [
   {
     path: "/products",
     element: <Products />,
+  },
+  {
+    path: "/products/:id",
+    element: <ProductDetail />,
   },
   {
     path: "/login",

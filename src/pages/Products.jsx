@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router';
 import { getProducts } from '../services/productService';
 
 export default function Products() {
+  const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedImage, setSelectedImage] = useState(null);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -45,34 +46,6 @@ export default function Products() {
     return 'https://via.placeholder.com/400x300?text=No+Image';
   };
 
-  // Handle image click to show fullscreen
-  const handleImageClick = (imageUrl) => {
-    setSelectedImage(imageUrl);
-  };
-
-  // Close fullscreen image
-  const handleCloseImage = () => {
-    setSelectedImage(null);
-  };
-
-  // Close on Escape key
-  useEffect(() => {
-    const handleEscape = (e) => {
-      if (e.key === 'Escape') {
-        handleCloseImage();
-      }
-    };
-
-    if (selectedImage) {
-      document.addEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'hidden'; // Prevent background scrolling
-    }
-
-    return () => {
-      document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'unset';
-    };
-  }, [selectedImage]);
 
   // Loading state
   if (isLoading) {
@@ -164,12 +137,10 @@ export default function Products() {
             <div
               key={product.id}
               className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200 cursor-pointer"
+              onClick={() => navigate(`/products/${product.id}`)}
             >
               {/* Product Image */}
-              <div 
-                className="relative h-48 w-full bg-gray-200 cursor-pointer"
-                onClick={() => handleImageClick(getFirstImage(product.image_urls))}
-              >
+              <div className="relative h-48 w-full bg-gray-200">
                 <img
                   src={getFirstImage(product.image_urls)}
                   alt={product.title}
@@ -199,29 +170,6 @@ export default function Products() {
           <p>Showing {products.length} product{products.length !== 1 ? 's' : ''}</p>
         </div>
       </div>
-      {/* Fullscreen Image Modal */}
-      {selectedImage && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-          onClick={handleCloseImage}
-        >
-          {/* Close Button */}
-          <button
-            onClick={handleCloseImage}
-            className="absolute top-4 right-4 text-white text-2xl font-semibold hover:text-gray-300 cursor-pointer z-50"
-            aria-label="Close"
-          >
-            ✕
-          </button>
-
-          <img
-            src={selectedImage}
-            alt="Fullscreen product"
-            className="max-h-full max-w-full rounded"
-            onClick={(e) => e.stopPropagation()}
-          />
-        </div>
-      )}
     </div>
   );
 }

@@ -138,14 +138,6 @@ export default function Dashboard() {
                 Welcome back, {student.name}!
               </p>
             </div>
-            <div className="flex gap-3">
-              <Link
-                to="/account-settings"
-                className="px-4 py-2 bg-white text-indigo-600 rounded-lg hover:bg-gray-50 transition-colors font-medium shadow-sm"
-              >
-                Account Settings
-              </Link>
-            </div>
           </div>
         </div>
 
