@@ -40,6 +40,11 @@ export default function ProductDetail() {
 
     fetchProduct();
   }, [id]);
+  //Like button
+  <button class="like-btn" onclick="toggleLike(productId)">
+  ❤️
+</button>
+
 
   // Shorten image URL when product loads
   useEffect(() => {
@@ -126,7 +131,7 @@ export default function ProductDetail() {
         {/* Back Button */}
         <button
           onClick={() => navigate('/products')}
-          className="mb-6 flex items-center text-gray-600 hover:text-gray-900 transition-colors"
+          className="mb-6 flex items-center relative cursor-pointer text-gray-600 hover:text-gray-900 transition-colors"
         >
           <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
