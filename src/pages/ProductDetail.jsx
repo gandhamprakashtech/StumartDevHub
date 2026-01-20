@@ -40,11 +40,6 @@ export default function ProductDetail() {
 
     fetchProduct();
   }, [id]);
-  //Like button
-  <button class="like-btn" onclick="toggleLike(productId)">
-  ❤️
-</button>
-
 
   // Shorten image URL when product loads
   useEffect(() => {
