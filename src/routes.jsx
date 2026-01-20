@@ -11,6 +11,7 @@ import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
 import ForgotPassword from "./pages/ForgotPassword";
 import Profile from "./pages/Profile";
 import MyPosts from "./pages/MyPosts";
+import CustomerFeedback from "./pages/CustomerFeedback";
 
 
 
@@ -74,5 +75,9 @@ export const routes = [
   {
     path: "/forgot-password",
     element: <ForgotPassword />,
+  },
+  {
+    path: "/customer-feedback",
+    element: <CustomerFeedback />,
   },
 ];
