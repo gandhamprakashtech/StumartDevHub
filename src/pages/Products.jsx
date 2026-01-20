@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { getProducts } from '../services/productService';
-
+import { FaHeart } from 'react-icons/fa';
+import { CiHeart } from 'react-icons/ci';
 export default function Products() {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
@@ -17,6 +18,10 @@ export default function Products() {
         const result = await getProducts();
         
         if (result.success) {
+          result.data = result.data.map((product) => {
+            product.isLiked = false;
+            return product;
+          })
           setProducts(result.data || []);
         } else {
           setError(result.error || 'Failed to load products');
@@ -45,6 +50,15 @@ export default function Products() {
     // Placeholder image if no images
     return 'https://via.placeholder.com/400x300?text=No+Image';
   };
+const handleLikeToggle = (productId) => {
+  setProducts((prevProducts) =>
+    prevProducts.map((product) =>
+      product.id === productId
+        ? { ...product, isLiked: !product.isLiked }
+        : product
+    )
+  );
+};
 
 
   // Loading state
@@ -68,6 +82,7 @@ export default function Products() {
       </div>
     );
   }
+  
 
   // Error state
   if (error) {
@@ -137,7 +152,6 @@ export default function Products() {
             <div
               key={product.id}
               className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200 cursor-pointer"
-              onClick={() => navigate(`/products/${product.id}`)}
             >
               {/* Product Image */}
               <div className="relative h-48 w-full bg-gray-200">
@@ -149,18 +163,39 @@ export default function Products() {
                   onError={(e) => {
                     e.target.src = 'https://via.placeholder.com/400x300?text=No+Image';
                   }}
+                                onClick={() => navigate(`/products/${product.id}`)}
+
                 />
               </div>
 
               {/* Product Info */}
               <div className="p-4">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 min-h-[3rem]">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 min-h-[3rem]"               onClick={() => navigate(`/products/${product.id}`)}
+>
                   {product.title}
                 </h3>
-                <p className="text-2xl font-bold text-indigo-600">
-                  {formatPrice(product.price)}
-                </p>
+                <div className='flex justify-between mr-1'>
+                  <p className="text-2xl font-bold text-indigo-600">
+                    {formatPrice(product.price)}
+                  </p>
+                  <button
+  className="cursor-pointer"
+  onClick={(e) => {
+    e.stopPropagation(); // prevents card click navigation
+    handleLikeToggle(product.id);
+  }}
+>
+  {!product.isLiked ? (
+    <CiHeart className="text-2xl" />
+  ) : (
+    <FaHeart className="text-2xl text-red-500" />
+  )}
+</button>
+
+                </div>
               </div>
+
+             
             </div>
           ))}
         </div>

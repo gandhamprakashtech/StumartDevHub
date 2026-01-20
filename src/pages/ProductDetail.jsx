@@ -40,7 +40,7 @@ export default function ProductDetail() {
 
     fetchProduct();
   }, [id]);
-
+  
   // Shorten image URL when product loads
   useEffect(() => {
     const shortenImageUrl = async () => {

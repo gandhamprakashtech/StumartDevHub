@@ -11,6 +11,7 @@ import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
 import ForgotPassword from "./pages/ForgotPassword";
 import Profile from "./pages/Profile";
 import MyPosts from "./pages/MyPosts";
+import LikedPosts from "./pages/LikedPosts";
 
 
 
@@ -75,4 +76,12 @@ export const routes = [
     path: "/forgot-password",
     element: <ForgotPassword />,
   },
+  {
+    path: "/liked-posts",
+    element: (
+      <ProtectedRoute>
+        <LikedPosts />
+      </ProtectedRoute>
+    ),
+  }
 ];
