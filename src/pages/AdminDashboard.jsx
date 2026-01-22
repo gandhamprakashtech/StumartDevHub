@@ -1,19 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
-import { getCurrentAdmin, adminSignOut, getStudentStatistics } from '../services/adminService';
+import { getCurrentAdmin, adminSignOut } from '../services/adminService';
+import { getPINStatistics } from '../services/pinService';
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const [admin, setAdmin] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const [stats, setStats] = useState({
-    total: 0,
-    pending: 0,
-    active: 0,
-    products: 0,
+  const [pinStats, setPinStats] = useState({
+    totalPINs: 0,
+    availablePINs: 0,
+    registeredPINs: 0,
+    branchesCount: 0,
+    sectionsCount: 0,
+    branches: [],
+    sections: [],
   });
-  const [statsLoading, setStatsLoading] = useState(true);
+  const [pinStatsLoading, setPinStatsLoading] = useState(true);
 
 
   /**
@@ -22,9 +26,9 @@ export default function AdminDashboard() {
   useEffect(() => {
     const loadAdminData = async () => {
       try {
-        const { user, admin: adminData, error } = await getCurrentAdmin();
+        const { admin: adminData, error } = await getCurrentAdmin();
         
-        if (error || !user || !adminData) {
+        if (error || !adminData) {
           // If admin is not authenticated, redirect to admin login
           navigate('/admin/login');
           return;
@@ -32,22 +36,25 @@ export default function AdminDashboard() {
 
         setAdmin(adminData);
 
-        // Load student statistics
-        const statsResult = await getStudentStatistics();
-        if (statsResult.success && statsResult.data) {
-          setStats({
-            total: statsResult.data.total || 0,
-            pending: statsResult.data.pending || 0,
-            active: statsResult.data.active || 0,
-            products: 0, // Will be implemented later
+        // Load PIN statistics
+        const pinStatsResult = await getPINStatistics();
+        if (pinStatsResult.success && pinStatsResult.data) {
+          setPinStats({
+            totalPINs: pinStatsResult.data.totalPINs || 0,
+            availablePINs: pinStatsResult.data.availablePINs || 0,
+            registeredPINs: pinStatsResult.data.registeredPINs || 0,
+            branchesCount: pinStatsResult.data.branchesCount || 0,
+            sectionsCount: pinStatsResult.data.sectionsCount || 0,
+            branches: pinStatsResult.data.branches || [],
+            sections: pinStatsResult.data.sections || [],
           });
         }
+        setPinStatsLoading(false);
       } catch (error) {
         console.error('Error loading admin data:', error);
         navigate('/admin/login');
       } finally {
         setIsLoading(false);
-        setStatsLoading(false);
       }
     };
 
@@ -131,109 +138,52 @@ export default function AdminDashboard() {
           </p>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-6">
-          <div className="bg-white shadow rounded-lg p-6">
-            <div className="flex items-center">
-              <div className="flex-shrink-0 bg-indigo-500 rounded-md p-3">
-                <svg
-                  className="h-6 w-6 text-white"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-                  />
-                </svg>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Total Students</p>
-                <p className="text-2xl font-semibold text-gray-900">
-                  {statsLoading ? '...' : stats.total}
-                </p>
-              </div>
+        {/* PIN Statistics Section */}
+        <div className="bg-white shadow rounded-lg p-6 mb-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">
+            PIN Management Statistics
+          </h2>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-5">
+            <div className="bg-indigo-50 rounded-lg p-4">
+              <p className="text-sm font-medium text-indigo-600">Total PINs</p>
+              <p className="text-3xl font-bold text-indigo-900 mt-2">
+                {pinStatsLoading ? '...' : pinStats.totalPINs}
+              </p>
             </div>
-          </div>
-
-          <div className="bg-white shadow rounded-lg p-6">
-            <div className="flex items-center">
-              <div className="flex-shrink-0 bg-yellow-500 rounded-md p-3">
-                <svg
-                  className="h-6 w-6 text-white"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Pending Approvals</p>
-                <p className="text-2xl font-semibold text-gray-900">
-                  {statsLoading ? '...' : stats.pending}
-                </p>
-              </div>
+            <div className="bg-green-50 rounded-lg p-4">
+              <p className="text-sm font-medium text-green-600">Available</p>
+              <p className="text-3xl font-bold text-green-900 mt-2">
+                {pinStatsLoading ? '...' : pinStats.availablePINs}
+              </p>
             </div>
-          </div>
-
-          <div className="bg-white shadow rounded-lg p-6">
-            <div className="flex items-center">
-              <div className="flex-shrink-0 bg-green-500 rounded-md p-3">
-                <svg
-                  className="h-6 w-6 text-white"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Active Students</p>
-                <p className="text-2xl font-semibold text-gray-900">
-                  {statsLoading ? '...' : stats.active}
-                </p>
-              </div>
+            <div className="bg-blue-50 rounded-lg p-4">
+              <p className="text-sm font-medium text-blue-600">Registered</p>
+              <p className="text-3xl font-bold text-blue-900 mt-2">
+                {pinStatsLoading ? '...' : pinStats.registeredPINs}
+              </p>
             </div>
-          </div>
-
-          <div className="bg-white shadow rounded-lg p-6">
-            <div className="flex items-center">
-              <div className="flex-shrink-0 bg-purple-500 rounded-md p-3">
-                <svg
-                  className="h-6 w-6 text-white"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-                  />
-                </svg>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Total Products</p>
-                <p className="text-2xl font-semibold text-gray-900">
-                  {statsLoading ? '...' : stats.products}
+            <div className="bg-purple-50 rounded-lg p-4">
+              <p className="text-sm font-medium text-purple-600">Branches</p>
+              <p className="text-3xl font-bold text-purple-900 mt-2">
+                {pinStatsLoading ? '...' : pinStats.branchesCount}
+              </p>
+              {!pinStatsLoading && pinStats.branches.length > 0 && (
+                <p className="text-xs text-purple-600 mt-1">
+                  {pinStats.branches.join(', ')}
                 </p>
-              </div>
+              )}
+            </div>
+            <div className="bg-orange-50 rounded-lg p-4">
+              <p className="text-sm font-medium text-orange-600">Sections</p>
+              <p className="text-3xl font-bold text-orange-900 mt-2">
+                {pinStatsLoading ? '...' : pinStats.sectionsCount}
+              </p>
+              {!pinStatsLoading && pinStats.sections.length > 0 && (
+                <p className="text-xs text-orange-600 mt-1">
+                  {pinStats.sections.slice(0, 5).join(', ')}
+                  {pinStats.sections.length > 5 && ` +${pinStats.sections.length - 5} more`}
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -244,9 +194,12 @@ export default function AdminDashboard() {
             Quick Actions
           </h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <button className="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-indigo-500 hover:bg-indigo-50 transition-colors text-left">
-              <h3 className="font-medium text-gray-900">Manage Student IDs</h3>
-              <p className="text-sm text-gray-500 mt-1">Add, edit, or remove student IDs</p>
+            <button 
+              onClick={() => navigate('/admin/pin-management')}
+              className="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-indigo-500 hover:bg-indigo-50 transition-colors text-left"
+            >
+              <h3 className="font-medium text-gray-900">Manage PIN Numbers</h3>
+              <p className="text-sm text-gray-500 mt-1">Create and manage student PIN numbers</p>
             </button>
             <button className="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-indigo-500 hover:bg-indigo-50 transition-colors text-left">
               <h3 className="font-medium text-gray-900">View Registered Students</h3>
@@ -261,7 +214,6 @@ export default function AdminDashboard() {
       </div>
     </div>
   );
-  <script type="module" src="/auth.js"></script>
 }
 
 

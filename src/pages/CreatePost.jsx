@@ -36,15 +36,16 @@ export default function CreatePost() {
   const [submitError, setSubmitError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
-  // Branch options (extracted from PIN format: XX030-BRANCH-XXX)
+  // Branch options
   const branchOptions = [
     { value: '', label: 'All Branches' },
-    { value: 'CM', label: 'Computer Science (CM)' },
-    { value: 'M', label: 'Mechanical (M)' },
-    { value: 'EC', label: 'Electronics (EC)' },
-    { value: 'EE', label: 'Electrical (EE)' },
-    { value: 'CE', label: 'Civil (CE)' },
-    { value: 'IT', label: 'Information Technology (IT)' },
+    { value: 'CME', label: 'CME (Computer Science)' },
+    { value: 'CE', label: 'CE (Civil)' },
+    { value: 'M', label: 'M (Mechanical)' },
+    { value: 'ECE', label: 'ECE' },
+    { value: 'EEE', label: 'EEE' },
+    { value: 'CIOT', label: 'CIOT' },
+    { value: 'AIML', label: 'AIML' },
   ];
 
   const categoryOptions = [
