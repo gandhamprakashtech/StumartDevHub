@@ -19,10 +19,10 @@ export default function ProtectedAdminRoute({ children }) {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const { user, admin, error } = await getCurrentAdmin();
+        const { admin, error } = await getCurrentAdmin();
         
-        // User must be authenticated and be an admin
-        if (user && admin && !error) {
+        // Admin must be authenticated (checked via sessionStorage)
+        if (admin && !error) {
           setIsAuthenticated(true);
         } else {
           setIsAuthenticated(false);

@@ -12,6 +12,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import Profile from "./pages/Profile";
 import MyPosts from "./pages/MyPosts";
 import CustomerFeedback from "./pages/CustomerFeedback";
+import AdminPINManagement from "./pages/AdminPINManagement";
 
 
 
@@ -69,6 +70,14 @@ export const routes = [
     element: (
       <ProtectedAdminRoute>
         <AdminDashboard />
+      </ProtectedAdminRoute>
+    ),
+  },
+  {
+    path: "/admin/pin-management",
+    element: (
+      <ProtectedAdminRoute>
+        <AdminPINManagement />
       </ProtectedAdminRoute>
     ),
   },

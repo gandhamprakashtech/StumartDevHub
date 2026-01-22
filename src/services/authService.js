@@ -57,20 +57,18 @@ export const signUp = async ({ pinNumber, name, email, password }) => {
       };
     }
 
-    // Step 2: Insert student details into students table
+    // Step 2: Create student record using database function
+    // This function validates PIN availability and marks it as registered
     const { data: studentData, error: studentError } = await supabase
-      .from('students')
-      .insert({
-        pin_number: pinNumber,
-        name: name,
-        email: email,
-        auth_user_id: authData.user.id,
-        status: 'pending',
-      })
-      .select()
-      .single();
+      .rpc('create_student_record', {
+        p_pin_number: pinNumber,
+        p_name: name,
+        p_email: email,
+        p_auth_user_id: authData.user.id,
+        p_status: 'pending',
+      });
 
-    if (studentError) {
+    if (studentError || !studentData || studentData.length === 0) {
       // If student insertion fails, we have an orphaned auth user
       // Note: Client-side cannot delete auth users (requires admin API)
       // The user will need to verify email to login, but won't have a student record
@@ -80,14 +78,26 @@ export const signUp = async ({ pinNumber, name, email, password }) => {
       // Sign out the user to prevent any session issues
       await supabase.auth.signOut();
 
+      let errorMessage = 'Failed to create student record';
+      if (studentError) {
+        if (studentError.message.includes('not available')) {
+          errorMessage = 'This PIN is already registered. Please select a different PIN.';
+        } else if (studentError.message.includes('not found')) {
+          errorMessage = 'Invalid PIN number. Please select a valid PIN.';
+        } else {
+          errorMessage = studentError.message;
+        }
+      }
+
       return {
         success: false,
-        error: studentError.code === '23505' 
-          ? 'PIN number already exists. Please use a different PIN.'
-          : studentError.message || 'Failed to create student record',
+        error: errorMessage,
         data: null,
       };
     }
+
+    // Extract student data from array result
+    const student = studentData[0];
     
     // Step 3: Return success (user is created but email not verified yet)
     return {
@@ -95,7 +105,7 @@ export const signUp = async ({ pinNumber, name, email, password }) => {
       error: null,
       data: {
         user: authData.user,
-        student: studentData,
+        student: student,
       },
     };
   } catch (error) {
@@ -194,22 +204,31 @@ export const signIn = async (email, password) => {
       };
     }
 
-    // Step 4: Update status to 'active' if it's still 'pending' (email is now verified)
-    if (studentData.status === 'pending') {
-      const { data: updatedStudent, error: updateError } = await supabase
-        .from('students')
-        .update({ status: 'active' })
-        .eq('auth_user_id', authData.user.id)
-        .select()
-        .single();
+    // Step 4: If email is confirmed in Auth but not in database, call confirm_student_email()
+    if (authData.user.email_confirmed_at && !studentData.email_confirmed) {
+      const { data: confirmedData, error: confirmError } = await supabase.rpc('confirm_student_email', {
+        p_auth_user_id: authData.user.id
+      });
 
-      if (updateError) {
-        console.error('Failed to update student status:', updateError);
-        // Continue anyway - status update is not critical
-      } else {
-        // Use the updated student data
+      if (confirmError) {
+        console.error('Error confirming email in database:', confirmError);
+        // Continue anyway - will try again on next login
+      } else if (confirmedData && confirmedData.length > 0) {
+        // Use the confirmed student data
+        studentData.email_confirmed = true;
         studentData.status = 'active';
+        studentData.email_confirmed_at = confirmedData[0].email_confirmed_at;
       }
+    }
+
+    // Step 5: Verify student is active (must have confirmed email)
+    if (studentData.status !== 'active' || !studentData.email_confirmed) {
+      await supabase.auth.signOut();
+      return {
+        success: false,
+        error: 'Your email is not confirmed. Please check your inbox and click the confirmation link.',
+        data: null,
+      };
     }
 
     // Step 5: Return success with user and student data
@@ -284,10 +303,10 @@ export const getCurrentUser = async () => {
       };
     }
 
-    // Get student record
+    // Get student record (optimize: only select needed fields)
     const { data: studentData, error: studentError } = await supabase
       .from('students')
-      .select('*')
+      .select('pin_number, name, email, joining_year, branch, year, section, auth_user_id, status, email_confirmed, email_confirmed_at, created_at, updated_at')
       .eq('auth_user_id', user.id)
       .single();
 
