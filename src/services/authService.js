@@ -8,17 +8,22 @@ import { supabase } from './supabaseClient';
 
 /**
  * Get the base URL for email redirects
- * Uses VITE_APP_URL environment variable if set, otherwise falls back to window.location.origin
- * This ensures production URLs are used even when signup happens on localhost
+ * Always uses production URL for email confirmation links
+ * This ensures users are redirected to the correct production site after email confirmation
  */
 const getBaseUrl = () => {
-  // Use environment variable if set (for production)
+  // Always use production URL for email redirects
+  // This ensures email confirmation links work correctly regardless of where user registered
+  const productionUrl = 'https://stumartdevhub.vercel.app';
+  
+  // Use environment variable if set (allows override for different environments)
   const envUrl = import.meta.env.VITE_APP_URL;
   if (envUrl) {
     return envUrl;
   }
-  // Fallback to current origin (for development)
-  return window.location.origin;
+  
+  // Always return production URL for email redirects
+  return productionUrl;
 };
 
 /**
