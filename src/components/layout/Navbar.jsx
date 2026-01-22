@@ -111,7 +111,7 @@ export default function Navbar() {
               Home
             </Link>
             <Link to="/customer-feedback" className="hover:text-black transition">
-              Customer Feedback
+              Feedback
             </Link>
 
             {isLoading ? (
