@@ -32,19 +32,49 @@ const getBaseUrl = () => {
  */
 export const signUp = async ({ pinNumber, name, email, password }) => {
   try {
+    // Validate and clean email before sending
+    const cleanEmail = email.trim().toLowerCase();
+    
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(cleanEmail)) {
+      return {
+        success: false,
+        error: 'Invalid email format. Please enter a valid email address.',
+        data: null,
+      };
+    }
+
     // Step 1: Create user in Supabase Auth
+    // Supabase will automatically send confirmation email
     const { data: authData, error: authError } = await supabase.auth.signUp({
-      email,
+      email: cleanEmail,
       password,
       options: {
         emailRedirectTo: `${getBaseUrl()}/login`,
+        // Ensure confirmation email is sent
+        data: {
+          name: name.trim(),
+          pin_number: pinNumber.trim(),
+        },
       },
     });
 
     if (authError) {
+      // Provide more helpful error messages
+      let errorMessage = authError.message;
+      
+      if (authError.message.includes('email_address_invalid')) {
+        errorMessage = 'Invalid email address. Please check your email format and try again. If the problem persists, contact support.';
+      } else if (authError.message.includes('already registered') || authError.message.includes('already exists')) {
+        errorMessage = 'This email is already registered. Please use a different email or try logging in.';
+      } else if (authError.message.includes('password')) {
+        errorMessage = 'Password does not meet requirements. Please use a stronger password (minimum 6 characters).';
+      }
+      
       return {
         success: false,
-        error: authError.message,
+        error: errorMessage,
         data: null,
       };
     }
@@ -59,13 +89,14 @@ export const signUp = async ({ pinNumber, name, email, password }) => {
 
     // Step 2: Create student record using database function
     // This function validates PIN availability and marks it as registered
+    // Account is created but status is 'pending' until email is confirmed
     const { data: studentData, error: studentError } = await supabase
       .rpc('create_student_record', {
-        p_pin_number: pinNumber,
-        p_name: name,
-        p_email: email,
+        p_pin_number: pinNumber.trim(),
+        p_name: name.trim(),
+        p_email: cleanEmail,
         p_auth_user_id: authData.user.id,
-        p_status: 'pending',
+        p_status: 'pending', // Account is pending until email confirmation
       });
 
     if (studentError || !studentData || studentData.length === 0) {
@@ -99,7 +130,10 @@ export const signUp = async ({ pinNumber, name, email, password }) => {
     // Extract student data from array result
     const student = studentData[0];
     
-    // Step 3: Return success (user is created but email not verified yet)
+    // Step 3: Return success
+    // Note: Account is created but email_confirmed = FALSE
+    // Supabase has automatically sent confirmation email
+    // User must click link in email to activate account
     return {
       success: true,
       error: null,
