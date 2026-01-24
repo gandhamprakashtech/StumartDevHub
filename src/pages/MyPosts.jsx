@@ -213,7 +213,7 @@ export default function MyPosts() {
                 <img
                   src={getFirstImage(product.image_urls)}
                   alt={product.title}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                   loading="lazy"
                   onError={(e) => {
                     e.target.src = 'https://via.placeholder.com/400x300?text=No+Image';
