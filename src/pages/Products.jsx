@@ -6,17 +6,24 @@ import { CiHeart } from 'react-icons/ci';
 export default function Products() {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Filter states
+  const [sortOrder, setSortOrder] = useState('newest');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+
   useEffect(() => {
     const fetchProducts = async () => {
-      setIsLoading(true); 
+      setIsLoading(true);
       setError(null);
 
       try {
-        const result = await getProducts();
-        
+        // If category is 'all', don't pass category filter
+        const filters = selectedCategory === 'all' ? {} : { category: selectedCategory };
+        const result = await getProducts(filters);
+
         if (result.success) {
           result.data = result.data.map((product) => {
             product.isLiked = false;
@@ -35,11 +42,32 @@ export default function Products() {
     };
 
     fetchProducts();
-  }, []);
+  }, [selectedCategory]);
+
+  // Filter and sort products
+  useEffect(() => {
+    let filtered = [...products];
+
+    // Apply sorting
+    if (sortOrder === 'price-high-low') {
+      filtered.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+    } else if (sortOrder === 'price-low-high') {
+      filtered.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+    } else if (sortOrder === 'newest') {
+      // Default is already sorted by newest from API
+      filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    }
+
+    setFilteredProducts(filtered);
+  }, [products, sortOrder]);
 
   // Format price as currency
   const formatPrice = (price) => {
-    return `₹ ${parseFloat(price).toFixed(2)}`;
+    const numPrice = parseFloat(price);
+    if (numPrice === 0) {
+      return 'FREE';
+    }
+    return `₹ ${numPrice.toFixed(2)}`;
   };
 
   // Get first image from image_urls array
@@ -105,7 +133,7 @@ const handleLikeToggle = (productId) => {
   }
 
   // Empty state
-  if (products.length === 0) {
+  if (filteredProducts.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
@@ -143,12 +171,50 @@ const handleLikeToggle = (productId) => {
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
             All Products
           </h1>
-          
+
+          {/* Filters */}
+          <div className="flex flex-col sm:flex-row gap-4 mt-6">
+            {/* Sort Dropdown */}
+            <div className="flex-1">
+              <label htmlFor="sort-select" className="block text-sm font-medium text-gray-700 mb-2">
+                Sort by
+              </label>
+              <select
+                id="sort-select"
+                value={sortOrder}
+                onChange={(e) => setSortOrder(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              >
+                <option value="newest">Newest First</option>
+                <option value="price-high-low">Price: High to Low</option>
+                <option value="price-low-high">Price: Low to High</option>
+              </select>
+            </div>
+
+            {/* Category Filter */}
+            <div className="flex-1">
+              <label htmlFor="category-select" className="block text-sm font-medium text-gray-700 mb-2">
+                Category
+              </label>
+              <select
+                id="category-select"
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              >
+                <option value="all">All Categories</option>
+                <option value="books">Books</option>
+                <option value="stationary">Stationary</option>
+                <option value="electronics">Electronics</option>
+                <option value="others">Others</option>
+              </select>
+            </div>
+          </div>
         </div>
 
         {/* Products Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {products.map((product) => (
+          {filteredProducts.map((product) => (
             <div
               key={product.id}
               className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200 cursor-pointer"
@@ -158,7 +224,7 @@ const handleLikeToggle = (productId) => {
                 <img
                   src={getFirstImage(product.image_urls)}
                   alt={product.title}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                   loading="lazy"
                   onError={(e) => {
                     e.target.src = 'https://via.placeholder.com/400x300?text=No+Image';
@@ -174,25 +240,9 @@ const handleLikeToggle = (productId) => {
 >
                   {product.title}
                 </h3>
-                <div className='flex justify-between mr-1'>
-                  <p className="text-2xl font-bold text-indigo-600">
-                    {formatPrice(product.price)}
-                  </p>
-                  <button
-  className="cursor-pointer"
-  onClick={(e) => {
-    e.stopPropagation(); // prevents card click navigation
-    handleLikeToggle(product.id);
-  }}
->
-  {!product.isLiked ? (
-    <CiHeart className="text-2xl" />
-  ) : (
-    <FaHeart className="text-2xl text-red-500" />
-  )}
-</button>
-
-                </div>
+                <p className={`text-2xl font-bold ${parseFloat(product.price) === 0 ? 'text-green-600' : 'text-indigo-600'}`}>
+  {formatPrice(product.price)}
+</p>
               </div>
 
              
@@ -202,7 +252,7 @@ const handleLikeToggle = (productId) => {
 
         {/* Products Count */}
         <div className="mt-8 text-center text-gray-600">
-          <p>Showing {products.length} product{products.length !== 1 ? 's' : ''}</p>
+          <p>Showing {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''}</p>
         </div>
       </div>
     </div>

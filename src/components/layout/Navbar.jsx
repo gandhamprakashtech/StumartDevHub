@@ -14,6 +14,7 @@ export default function Navbar() {
   const [isLoading, setIsLoading] = useState(true);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -72,6 +73,14 @@ export default function Navbar() {
     setShowConfirmModal(false);
   };
 
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+  };
+
   // Generate initials like "KS"
   const getInitials = (name) =>
     name
@@ -84,22 +93,33 @@ export default function Navbar() {
   return (
     <>
       {/* Navbar */}
-      <nav className="w-full bg-blue-50 border-b border-blue-200">
-        <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
+      <nav className="w-full bg-blue-50 border-b border-blue-200 relative">
+        <div className="max-w-6xl mx-auto px-4 min-h-[3.5rem] sm:h-14 flex items-center justify-between">
           
-          {/* Logo */}
-          <Link to="/" className="flex items-center">
+          {/* Logo and College Name */}
+          <Link to="/" className="flex items-center gap-2 sm:gap-3 flex-shrink-0" onClick={closeMobileMenu}>
             <img
               src="/StumartTransparent.png"
               alt="StuMart Logo"
-              className="h-12 w-auto"
+              className="h-10 sm:h-12 w-auto flex-shrink-0"
             />
+            <div className="flex flex-col justify-center min-w-0">
+              <span className="text-[11px] sm:text-sm md:text-base font-semibold text-gray-800 leading-tight whitespace-nowrap">
+                AANM & VVRSR
+              </span>
+              <span className="text-[10px] sm:text-xs md:text-sm text-gray-600 leading-tight whitespace-nowrap">
+                Polytecnic
+              </span>
+            </div>
           </Link>
 
-          {/* Right side */}
-          <div className="flex items-center gap-3 sm:gap-4 text-gray-600">
-            <Link to="/" className="hover:text-black">
+          {/* Desktop Navigation - Hidden on mobile */}
+          <div className="hidden md:flex items-center gap-3 lg:gap-4 text-gray-600">
+            <Link to="/" className="hover:text-black transition">
               Home
+            </Link>
+            <Link to="/customer-feedback" className="hover:text-black transition">
+              Feedback
             </Link>
 
             {isLoading ? (
@@ -123,23 +143,108 @@ export default function Navbar() {
                 {/* Logout */}
                 <button
                   onClick={handleLogoutClick}
-                  className="hover:text-black"
+                  className="hover:text-black transition"
                 >
                   Logout
                 </button>
               </>
             ) : (
               <>
-                <Link to="/login" className="hover:text-black">
+                <Link to="/login" className="hover:text-black transition">
                   Login
                 </Link>
-                <Link to="/register" className="hover:text-black">
+                <Link to="/register" className="hover:text-black transition">
                   Register
                 </Link>
               </>
             )}
           </div>
+
+          {/* Mobile Menu Button - Visible only on mobile */}
+          <button
+            onClick={toggleMobileMenu}
+            className="md:hidden p-2 text-gray-600 hover:text-black transition"
+            aria-label="Toggle menu"
+          >
+            {isMobileMenuOpen ? (
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            ) : (
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            )}
+          </button>
         </div>
+
+        {/* Mobile Menu - Slides down on mobile */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden bg-blue-50 border-t border-blue-200">
+            <div className="px-4 py-4 space-y-3">
+              <Link
+                to="/"
+                onClick={closeMobileMenu}
+                className="block py-2 text-gray-600 hover:text-black transition"
+              >
+                Home
+              </Link>
+              <Link
+                to="/customer-feedback"
+                onClick={closeMobileMenu}
+                className="block py-2 text-gray-600 hover:text-black transition"
+              >
+                Customer Feedback
+              </Link>
+
+              {isLoading ? (
+                <span className="block py-2 text-sm text-gray-600">Loading...</span>
+              ) : isAuthenticated ? (
+                <>
+                  {student && (
+                    <Link
+                      to="/Profile"
+                      onClick={closeMobileMenu}
+                      className="flex items-center gap-3 py-2 text-gray-600 hover:text-black transition"
+                    >
+                      <div className="w-9 h-9 flex items-center justify-center rounded-full 
+                                     bg-blue-600 text-white font-semibold">
+                        {getInitials(student.name)}
+                      </div>
+                      <span>Profile</span>
+                    </Link>
+                  )}
+                  <button
+                    onClick={() => {
+                      closeMobileMenu();
+                      handleLogoutClick();
+                    }}
+                    className="block w-full text-left py-2 text-gray-600 hover:text-black transition"
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    to="/login"
+                    onClick={closeMobileMenu}
+                    className="block py-2 text-gray-600 hover:text-black transition"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    to="/register"
+                    onClick={closeMobileMenu}
+                    className="block py-2 text-gray-600 hover:text-black transition"
+                  >
+                    Register
+                  </Link>
+                </>
+              )}
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* Logout Confirmation Modal */}

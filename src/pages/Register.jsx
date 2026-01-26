@@ -1,12 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router';
 import { signUp } from '../services/authService';
-
+import { 
+  getAvailableJoiningYears,
+  getAvailableBranches,
+  getAvailableYears,
+  getAvailableSections,
+  getAvailablePINs 
+} from '../services/pinService';
 
 export default function Register() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
+    joiningYear: '',
+    branch: '',
+    year: '',
+    section: '',
     pinNumber: '',
     name: '',
     email: '',
@@ -14,6 +24,16 @@ export default function Register() {
     confirmPassword: '',
   });
 
+  const [availableJoiningYears, setAvailableJoiningYears] = useState([]);
+  const [availableBranches, setAvailableBranches] = useState([]);
+  const [availableYears, setAvailableYears] = useState([]);
+  const [availablePINs, setAvailablePINs] = useState([]);
+  const [availableSections, setAvailableSections] = useState([]);
+  const [loadingJoiningYears, setLoadingJoiningYears] = useState(false);
+  const [loadingBranches, setLoadingBranches] = useState(false);
+  const [loadingYears, setLoadingYears] = useState(false);
+  const [loadingPINs, setLoadingPINs] = useState(false);
+  const [loadingSections, setLoadingSections] = useState(false);
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
@@ -21,90 +41,169 @@ export default function Register() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [shake, setShake] = useState(false);
 
+  // Fetch available joining years on mount
+  useEffect(() => {
+    const fetchJoiningYears = async () => {
+      setLoadingJoiningYears(true);
+      const result = await getAvailableJoiningYears();
+      if (result.success) {
+        setAvailableJoiningYears(result.data || []);
+      }
+      setLoadingJoiningYears(false);
+    };
+    fetchJoiningYears();
+  }, []);
+
+  // Fetch available branches when joining year changes
+  useEffect(() => {
+    const fetchBranches = async () => {
+      if (formData.joiningYear) {
+        setLoadingBranches(true);
+        const result = await getAvailableBranches(parseInt(formData.joiningYear));
+        if (result.success) {
+          setAvailableBranches(result.data || []);
+        }
+        setLoadingBranches(false);
+        // Reset dependent fields
+        setFormData((prev) => ({ ...prev, branch: '', year: '', section: '', pinNumber: '' }));
+      } else {
+        setAvailableBranches([]);
+        setFormData((prev) => ({ ...prev, branch: '', year: '', section: '', pinNumber: '' }));
+      }
+    };
+    fetchBranches();
+  }, [formData.joiningYear]);
+
+  // Fetch available academic years when joining year and branch change
+  useEffect(() => {
+    const fetchYears = async () => {
+      if (formData.joiningYear && formData.branch) {
+        setLoadingYears(true);
+        const result = await getAvailableYears(parseInt(formData.joiningYear), formData.branch);
+        if (result.success) {
+          setAvailableYears(result.data || []);
+        }
+        setLoadingYears(false);
+        // Reset dependent fields
+        setFormData((prev) => ({ ...prev, year: '', section: '', pinNumber: '' }));
+      } else {
+        setAvailableYears([]);
+        setFormData((prev) => ({ ...prev, year: '', section: '', pinNumber: '' }));
+      }
+    };
+    fetchYears();
+  }, [formData.joiningYear, formData.branch]);
+
+  // Fetch available sections when joining year, branch and year changes
+  useEffect(() => {
+    const fetchSections = async () => {
+      if (formData.joiningYear && formData.branch && formData.year) {
+        setLoadingSections(true);
+        const result = await getAvailableSections(
+          parseInt(formData.joiningYear),
+          formData.branch,
+          parseInt(formData.year)
+        );
+        
+        if (result.success) {
+          setAvailableSections(result.data || []);
+        } else {
+          setAvailableSections([]);
+        }
+        setLoadingSections(false);
+        
+        // Reset section and PIN when joining year/branch/year changes
+        setFormData((prev) => ({ ...prev, section: '', pinNumber: '' }));
+      } else {
+        setAvailableSections([]);
+        setFormData((prev) => ({ ...prev, section: '', pinNumber: '' }));
+      }
+    };
+
+    fetchSections();
+  }, [formData.joiningYear, formData.branch, formData.year]);
+
+  // Fetch available PINs when joining year, branch, year, or section changes
+  useEffect(() => {
+    const fetchPINs = async () => {
+      if (formData.joiningYear && formData.branch && formData.year && formData.section) {
+        setLoadingPINs(true);
+        const result = await getAvailablePINs(
+          parseInt(formData.joiningYear),
+          formData.branch,
+          parseInt(formData.year),
+          formData.section.toUpperCase()
+        );
+        
+        if (result.success) {
+          setAvailablePINs(result.data || []);
+        } else {
+          setAvailablePINs([]);
+          setErrors((prev) => ({ ...prev, pinNumber: result.error }));
+        }
+        setLoadingPINs(false);
+      } else {
+        setAvailablePINs([]);
+        setFormData((prev) => ({ ...prev, pinNumber: '' }));
+      }
+    };
+
+    fetchPINs();
+  }, [formData.joiningYear, formData.branch, formData.year, formData.section]);
+
+  // Auto-fill branch, year, section when PIN is selected
+  useEffect(() => {
+    if (formData.pinNumber && availablePINs.length > 0) {
+      const selectedPIN = availablePINs.find(
+        (pin) => pin.pin_number === formData.pinNumber
+      );
+      if (selectedPIN) {
+        // PIN already contains branch, year, section info
+        // No need to auto-fill as they're already selected
+      }
+    }
+  }, [formData.pinNumber, availablePINs]);
+
   /* ---------- Validation ---------- */
   const validateEmail = (email) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  /**
-   * Validate PIN Number
-   * Format: XX030-BRANCH-XXX
-   * - First 5 digits must end with 030 (college identifier)
-   * - Branch code: 1+ uppercase letters
-   * - Last 3 digits: exactly 3 digits
-   */
-  const validatePinNumber = (pinNumber) => {
-    const trimmed = pinNumber.trim();
-
-    if (!trimmed) {
-      return 'PIN number is required';
-    }
-
-    // Check format: XX030-BRANCH-XXX
-    const pinPattern = /^[0-9]{2}030-[A-Z]+-[0-9]{3}$/;
-    
-    if (!pinPattern.test(trimmed)) {
-      // Provide more specific error messages
-      const parts = trimmed.split('-');
-      
-      if (parts.length !== 3) {
-        return 'Invalid format. Expected: XX030-BRANCH-XXX (e.g., 23030-CM-048)';
-      }
-      
-      const [firstPart, branchPart, lastPart] = parts;
-      
-      // Check first part
-      if (!/^[0-9]{5}$/.test(firstPart)) {
-        return 'First part must be exactly 5 digits';
-      }
-      
-      if (!firstPart.endsWith('030')) {
-        return 'First 5 digits must end with 030 (college identifier)';
-      }
-      
-      // Check branch part
-      if (!/^[A-Z]+$/.test(branchPart)) {
-        if (/^[a-z]+$/.test(branchPart)) {
-          return 'Branch code must be uppercase (e.g., CM, M, EC)';
-        }
-        return 'Branch code must contain only uppercase letters';
-      }
-      
-      // Check last part
-      if (!/^[0-9]{3}$/.test(lastPart)) {
-        return 'Last part must be exactly 3 digits';
-      }
-      
-      return 'Invalid PIN format. Expected: XX030-BRANCH-XXX (e.g., 23030-CM-001)';
-    }
-
-    return null; // Valid
-  };
-
   const validateForm = () => {
     const newErrors = {};
 
-    const pinError = validatePinNumber(formData.pinNumber);
-    if (pinError) {
-      newErrors.pinNumber = pinError;
+    if (!formData.joiningYear) {
+      newErrors.joiningYear = 'Joining year is required';
     }
-
-    if (!formData.name.trim())
+    if (!formData.branch) {
+      newErrors.branch = 'Branch is required';
+    }
+    if (!formData.year) {
+      newErrors.year = 'Year is required';
+    }
+    if (!formData.section) {
+      newErrors.section = 'Section is required';
+    }
+    if (!formData.pinNumber) {
+      newErrors.pinNumber = 'PIN number is required';
+    }
+    if (!formData.name.trim()) {
       newErrors.name = 'Student name is required';
-
-    if (!formData.email.trim())
+    }
+    if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
-    else if (!validateEmail(formData.email))
+    } else if (!validateEmail(formData.email)) {
       newErrors.email = 'Invalid email format';
-
-    if (!formData.password)
+    }
+    if (!formData.password) {
       newErrors.password = 'Password is required';
-    else if (formData.password.length < 6)
+    } else if (formData.password.length < 6) {
       newErrors.password = 'Minimum 6 characters';
-
-    if (!formData.confirmPassword)
+    }
+    if (!formData.confirmPassword) {
       newErrors.confirmPassword = 'Confirm your password';
-    else if (formData.password !== formData.confirmPassword)
+    } else if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match';
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -114,25 +213,42 @@ export default function Register() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     
-    // Auto-format PIN number: convert branch code to uppercase
-    let processedValue = value;
-    if (name === 'pinNumber') {
-      // Split by dashes and uppercase the branch code part
-      const parts = value.split('-');
-      if (parts.length >= 2) {
-        // Uppercase the branch code (middle part)
-        parts[1] = parts[1].toUpperCase();
-        processedValue = parts.join('-');
-      } else if (parts.length === 1 && value.includes('-')) {
-        // Handle case where user is typing in branch section
-        const beforeDash = value.substring(0, value.lastIndexOf('-') + 1);
-        const afterDash = value.substring(value.lastIndexOf('-') + 1);
-        processedValue = beforeDash + afterDash.toUpperCase();
-      }
+    // Reset dependent fields when joining year, branch, year, or section changes
+    if (name === 'joiningYear') {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+        branch: '',
+        year: '',
+        section: '',
+        pinNumber: '', // Reset all dependent fields
+      }));
+    } else if (name === 'branch') {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+        year: '',
+        section: '',
+        pinNumber: '', // Reset dependent fields
+      }));
+    } else if (name === 'year') {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+        section: '',
+        pinNumber: '', // Reset dependent fields
+      }));
+    } else if (name === 'section') {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+        pinNumber: '', // Reset PIN selection
+      }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
     }
     
-    setFormData((p) => ({ ...p, [name]: processedValue }));
-    setErrors((p) => ({ ...p, [name]: '' }));
+    setErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
   const handleSubmit = async (e) => {
@@ -156,8 +272,8 @@ export default function Register() {
       });
 
       if (result.success) {
-        setSuccessMessage('Please verify your email to activate your account');
-        setTimeout(() => navigate('/login'), 3000);
+        setSuccessMessage('Registration successful! Please check your email and click the confirmation link to activate your account. You will be redirected to login page.');
+        setTimeout(() => navigate('/login'), 5000);
       } else {
         setErrors({ submit: result.error });
         setShake(true);
@@ -171,9 +287,25 @@ export default function Register() {
     }
   };
 
+  /* ---------- Icons ---------- */
+  const eyeIcon = (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M2.5 12s3.5-6.5 9.5-6.5S21.5 12 21.5 12s-3.5 6.5-9.5 6.5S2.5 12 2.5 12z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  );
+
+  const eyeOffIcon = (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 19.5c-5.99 0-9.5-7.5-9.5-7.5a21.12 21.12 0 0 1 4.36-5.2" />
+      <path d="M1 1l22 22" />
+      <path d="M9.88 9.88a3 3 0 0 0 4.24 4.24" />
+    </svg>
+  );
+
   /* ---------- UI ---------- */
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
+    <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-indigo-50 via-blue-50 to-purple-100">
       <div
         className={`w-full max-w-md p-8 rounded-2xl bg-white/20 backdrop-blur-xl
         border border-white/30 shadow-2xl space-y-6
@@ -184,32 +316,204 @@ export default function Register() {
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-
-          {/* PIN */}
+          {/* Joining Year */}
           <div className="relative">
-            <input
+            <select
+              name="joiningYear"
+              value={formData.joiningYear}
+              onChange={handleChange}
+              disabled={loadingJoiningYears}
+              className={`peer w-full px-4 pt-6 pb-3 rounded-xl placeholder-black backdrop-blur-md outline-none
+              ${errors.joiningYear ? 'border border-red-500 bg-red-100' : 'border border-white/40 bg-indigo-50 peer-placeholder-shown:bg-white/40'}
+              focus:ring-2 ${errors.joiningYear ? 'focus:ring-red-400' : 'focus:ring-indigo-400'}
+              ${loadingJoiningYears ? 'opacity-50 cursor-not-allowed' : ''}`}
+            >
+              <option value="">
+                {loadingJoiningYears
+                  ? 'Loading years...'
+                  : availableJoiningYears.length === 0
+                  ? 'No joining years available'
+                  : 'Select Joining Year'}
+              </option>
+              {availableJoiningYears.map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
+            <label className={`absolute left-4 top-1 text-sm transition-all backdrop-blur-sm px-1 rounded-sm
+              ${errors.joiningYear ? 'text-red-600 bg-red-50' : 'text-indigo-500 bg-white/10'}`}>
+              Joining Year <span className="text-red-500">*</span>
+            </label>
+            {errors.joiningYear && (
+              <div className="absolute left-4 top-full mt-3 z-50 bg-red-200 border border-red-400 text-red-900 text-sm px-3 py-1 rounded shadow-md animate-popup">
+                {errors.joiningYear}
+              </div>
+            )}
+          </div>
+
+          {/* Branch */}
+          <div className="relative">
+            <select
+              name="branch"
+              value={formData.branch}
+              onChange={handleChange}
+              disabled={!formData.joiningYear || loadingBranches}
+              className={`peer w-full px-4 pt-6 pb-3 rounded-xl placeholder-black backdrop-blur-md outline-none
+              ${errors.branch ? 'border border-red-500 bg-red-100' : 'border border-white/40 bg-indigo-50 peer-placeholder-shown:bg-white/40'}
+              focus:ring-2 ${errors.branch ? 'focus:ring-red-400' : 'focus:ring-indigo-400'}
+              ${!formData.joiningYear || loadingBranches ? 'opacity-50 cursor-not-allowed' : ''}`}
+            >
+              <option value="">
+                {loadingBranches
+                  ? 'Loading branches...'
+                  : !formData.joiningYear
+                  ? 'Select Joining Year first'
+                  : availableBranches.length === 0
+                  ? 'No branches available'
+                  : 'Select Branch'}
+              </option>
+              {availableBranches.map((branch) => (
+                <option key={branch} value={branch}>
+                  {branch}
+                </option>
+              ))}
+            </select>
+            <label className={`absolute left-4 top-1 text-sm transition-all backdrop-blur-sm px-1 rounded-sm
+              ${errors.branch ? 'text-red-600 bg-red-50' : 'text-indigo-500 bg-white/10'}`}>
+              Branch <span className="text-red-500">*</span>
+            </label>
+            {errors.branch && (
+              <div className="absolute left-4 top-full mt-3 z-50 bg-red-200 border border-red-400 text-red-900 text-sm px-3 py-1 rounded shadow-md animate-popup">
+                {errors.branch}
+              </div>
+            )}
+          </div>
+
+          {/* Year */}
+          <div className="relative">
+            <select
+              name="year"
+              value={formData.year}
+              onChange={handleChange}
+              disabled={!formData.joiningYear || !formData.branch || loadingYears}
+              className={`peer w-full px-4 pt-6 pb-3 rounded-xl placeholder-black backdrop-blur-md outline-none
+              ${errors.year ? 'border border-red-500 bg-red-100' : 'border border-white/40 bg-indigo-50 peer-placeholder-shown:bg-white/40'}
+              focus:ring-2 ${errors.year ? 'focus:ring-red-400' : 'focus:ring-indigo-400'}
+              ${!formData.joiningYear || !formData.branch || loadingYears ? 'opacity-50 cursor-not-allowed' : ''}`}
+            >
+              <option value="">
+                {loadingYears
+                  ? 'Loading years...'
+                  : !formData.joiningYear || !formData.branch
+                  ? 'Select Joining Year and Branch first'
+                  : availableYears.length === 0
+                  ? 'No years available'
+                  : 'Select Year'}
+              </option>
+              {availableYears.map((year) => (
+                <option key={year} value={year}>
+                  {year}st Year
+                </option>
+              ))}
+            </select>
+            <label className={`absolute left-4 top-1 text-sm transition-all backdrop-blur-sm px-1 rounded-sm
+              ${errors.year ? 'text-red-600 bg-red-50' : 'text-indigo-500 bg-white/10'}`}>
+              Year <span className="text-red-500">*</span>
+            </label>
+            {errors.year && (
+              <div className="absolute left-4 top-full mt-3 z-50 bg-red-200 border border-red-400 text-red-900 text-sm px-3 py-1 rounded shadow-md animate-popup">
+                {errors.year}
+              </div>
+            )}
+          </div>
+
+          {/* Section */}
+          <div className="relative">
+            <select
+              name="section"
+              value={formData.section}
+              onChange={handleChange}
+              disabled={!formData.joiningYear || !formData.branch || !formData.year || loadingSections}
+              className={`peer w-full px-4 pt-6 pb-3 rounded-xl placeholder-black backdrop-blur-md outline-none
+              ${errors.section ? 'border border-red-500 bg-red-100' : 'border border-white/40 bg-indigo-50 peer-placeholder-shown:bg-white/40'}
+              focus:ring-2 ${errors.section ? 'focus:ring-red-400' : 'focus:ring-indigo-400'}
+              ${!formData.joiningYear || !formData.branch || !formData.year || loadingSections ? 'opacity-50 cursor-not-allowed' : ''}`}
+            >
+              <option value="">
+                {loadingSections
+                  ? 'Loading sections...'
+                  : !formData.joiningYear || !formData.branch || !formData.year
+                  ? 'Select Joining Year, Branch and Year first'
+                  : availableSections.length === 0
+                  ? 'No sections available'
+                  : 'Select Section'}
+              </option>
+              {availableSections.map((section) => (
+                <option key={section} value={section}>
+                  {section}
+                </option>
+              ))}
+            </select>
+            <label className={`absolute left-4 top-1 text-sm transition-all backdrop-blur-sm px-1 rounded-sm
+              ${errors.section ? 'text-red-600 bg-red-50' : 'text-indigo-500 bg-white/10'}`}>
+              Section <span className="text-red-500">*</span>
+            </label>
+            {errors.section && (
+              <div className="absolute left-4 top-full mt-3 z-50 bg-red-200 border border-red-400 text-red-900 text-sm px-3 py-1 rounded shadow-md animate-popup">
+                {errors.section}
+              </div>
+            )}
+            {!errors.section && formData.branch && formData.year && !loadingSections && (
+              <div className="absolute left-4 top-full mt-1 text-xs text-gray-500">
+                {availableSections.length > 0
+                  ? `${availableSections.length} section(s) available`
+                  : 'No sections available for this branch/year'}
+              </div>
+            )}
+          </div>
+
+          {/* PIN Number */}
+          <div className="relative">
+            <select
               name="pinNumber"
               value={formData.pinNumber}
               onChange={handleChange}
-              placeholder=" "
+              disabled={!formData.joiningYear || !formData.branch || !formData.year || !formData.section || loadingPINs}
               className={`peer w-full px-4 pt-6 pb-3 rounded-xl placeholder-black backdrop-blur-md outline-none
               ${errors.pinNumber ? 'border border-red-500 bg-red-100' : 'border border-white/40 bg-indigo-50 peer-placeholder-shown:bg-white/40'}
-              focus:ring-2 ${errors.pinNumber ? 'focus:ring-red-400' : 'focus:ring-indigo-400'}`}
-            />
+              focus:ring-2 ${errors.pinNumber ? 'focus:ring-red-400' : 'focus:ring-indigo-400'}
+              ${!formData.branch || !formData.year || !formData.section || loadingPINs ? 'opacity-50 cursor-not-allowed' : ''}`}
+            >
+              <option value="">
+                {loadingPINs
+                  ? 'Loading PINs...'
+                  : !formData.branch || !formData.year || !formData.section
+                  ? 'Select Branch, Year, and Section first'
+                  : availablePINs.length === 0
+                  ? 'No available PINs'
+                  : 'Select PIN Number'}
+              </option>
+              {availablePINs.map((pin) => (
+                <option key={pin.pin_number} value={pin.pin_number}>
+                  {pin.pin_number}
+                </option>
+              ))}
+            </select>
             <label className={`absolute left-4 top-1 text-sm transition-all backdrop-blur-sm px-1 rounded-sm
-              peer-placeholder-shown:top-6 peer-placeholder-shown:text-base
-              peer-focus:top-1 peer-focus:text-sm
-              ${errors.pinNumber ? 'text-red-600 bg-red-50' : 'text-indigo-500 bg-white/10 peer-placeholder-shown:text-gray-600 peer-focus:text-indigo-500'}`}>
-              PIN Number
+              ${errors.pinNumber ? 'text-red-600 bg-red-50' : 'text-indigo-500 bg-white/10'}`}>
+              PIN Number <span className="text-red-500">*</span>
             </label>
-            {!errors.pinNumber && formData.pinNumber && (
-              <div className="absolute left-4 top-full mt-1 text-xs text-gray-500">
-                Format: XX030-BRANCH-XXX (e.g., 23030-CM-001)
-              </div>
-            )}
             {errors.pinNumber && (
               <div className="absolute left-4 top-full mt-3 z-50 bg-red-200 border border-red-400 text-red-900 text-sm px-3 py-1 rounded shadow-md animate-popup">
                 {errors.pinNumber}
+              </div>
+            )}
+            {!errors.pinNumber && formData.branch && formData.year && formData.section && !loadingPINs && (
+              <div className="absolute left-4 top-full mt-1 text-xs text-gray-500">
+                {availablePINs.length > 0
+                  ? `${availablePINs.length} PIN(s) available`
+                  : 'No PINs available for this combination'}
               </div>
             )}
           </div>
@@ -379,21 +683,3 @@ export default function Register() {
     </div>
   );
 }
-
-/* ---------- Icons ---------- */
-const eyeIcon = (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M2.5 12s3.5-6.5 9.5-6.5S21.5 12 21.5 12s-3.5 6.5-9.5 6.5S2.5 12 2.5 12z" />
-    <circle cx="12" cy="12" r="3" />
-  </svg>
-);
-<script type="module" src="/auth.js"></script>
-
-
-const eyeOffIcon = (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 19.5c-5.99 0-9.5-7.5-9.5-7.5a21.12 21.12 0 0 1 4.36-5.2" />
-    <path d="M1 1l22 22" />
-    <path d="M9.88 9.88a3 3 0 0 0 4.24 4.24" />
-  </svg>
-);

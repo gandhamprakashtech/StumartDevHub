@@ -12,14 +12,6 @@ export default function AdminLogin() {
   const [isLoading, setIsLoading] = useState(false);
 
   /**
-   * Validate email format
-   */
-  const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
-  /**
    * Validate form data
    */
   const validateForm = () => {
@@ -28,7 +20,7 @@ export default function AdminLogin() {
     // Email validation
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
-    } else if (!validateEmail(formData.email)) {
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
       newErrors.email = 'Please enter a valid email address';
     }
 
@@ -81,6 +73,8 @@ export default function AdminLogin() {
       );
 
       if (result.success) {
+        // Store admin session
+        sessionStorage.setItem('admin_logged_in', 'true');
         // Redirect to admin dashboard on successful login
         navigate('/admin/dashboard');
       } else {
@@ -111,7 +105,7 @@ export default function AdminLogin() {
             {/* Email */}
             <div>
               <label htmlFor="email" className="sr-only">
-                Email address
+                Email
               </label>
               <input
                 id="email"
@@ -192,7 +186,6 @@ export default function AdminLogin() {
       </div>
     </div>
   );
-  <script type="module" src="/auth.js"></script>
 }
 
 

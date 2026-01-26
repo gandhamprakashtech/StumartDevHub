@@ -73,15 +73,19 @@ export const routes = [
     ),
   },
   {
+    path: "/admin/pin-management",
+    element: (
+      <ProtectedAdminRoute>
+        <AdminPINManagement />
+      </ProtectedAdminRoute>
+    ),
+  },
+  {
     path: "/forgot-password",
     element: <ForgotPassword />,
   },
   {
-    path: "/liked-posts",
-    element: (
-      <ProtectedRoute>
-        <LikedPosts />
-      </ProtectedRoute>
-    ),
-  }
+    path: "/customer-feedback",
+    element: <CustomerFeedback />,
+  },
 ];

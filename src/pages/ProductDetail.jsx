@@ -67,7 +67,11 @@ export default function ProductDetail() {
 
   // Format price as currency
   const formatPrice = (price) => {
-    return `₹ ${parseFloat(price).toFixed(2)}`;
+    const numPrice = parseFloat(price);
+    if (numPrice === 0) {
+      return 'FREE';
+    }
+    return `₹ ${numPrice.toFixed(2)}`;
   };
 
   // Format category name
@@ -143,7 +147,7 @@ export default function ProductDetail() {
                 <img
                   src={images[selectedImageIndex] || 'https://via.placeholder.com/600x400?text=No+Image'}
                   alt={product.title}
-                  className="w-full h-96 object-cover rounded-lg"
+                  className="w-full h-96 object-contain rounded-lg"
                   onError={(e) => {
                     e.target.src = 'https://via.placeholder.com/600x400?text=No+Image';
                   }}
@@ -195,9 +199,9 @@ export default function ProductDetail() {
 
               {/* Price */}
               <div className="mb-6">
-                <p className="text-4xl font-bold text-indigo-600">
-                  {formatPrice(product.price)}
-                </p>
+              <p className={`text-4xl font-bold ${parseFloat(product.price) === 0 ? 'text-green-600' : 'text-indigo-600'}`}>
+  {formatPrice(product.price)}
+</p>
               </div>
 
               {/* Description */}
