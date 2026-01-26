@@ -39,7 +39,7 @@ export default function Products() {
     fetchProducts();
   }, [selectedCategory]);
 
-  // Filter and sort products
+  // Filter and and sort products
   useEffect(() => {
     let filtered = [...products];
 
