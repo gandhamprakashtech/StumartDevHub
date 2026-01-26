@@ -94,15 +94,23 @@ export default function Navbar() {
     <>
       {/* Navbar */}
       <nav className="w-full bg-blue-50 border-b border-blue-200 relative">
-        <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-4 min-h-[3.5rem] sm:h-14 flex items-center justify-between">
           
-          {/* Logo */}
-          <Link to="/" className="flex items-center" onClick={closeMobileMenu}>
+          {/* Logo and College Name */}
+          <Link to="/" className="flex items-center gap-2 sm:gap-3 flex-shrink-0" onClick={closeMobileMenu}>
             <img
               src="/StumartTransparent.png"
               alt="StuMart Logo"
-              className="h-12 w-auto"
+              className="h-10 sm:h-12 w-auto flex-shrink-0"
             />
+            <div className="flex flex-col justify-center min-w-0">
+              <span className="text-[11px] sm:text-sm md:text-base font-semibold text-gray-800 leading-tight whitespace-nowrap">
+                AANM & VVRSR
+              </span>
+              <span className="text-[10px] sm:text-xs md:text-sm text-gray-600 leading-tight whitespace-nowrap">
+                Polytecnic
+              </span>
+            </div>
           </Link>
 
           {/* Desktop Navigation - Hidden on mobile */}
