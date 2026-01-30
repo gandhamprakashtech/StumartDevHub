@@ -51,7 +51,7 @@ export default function Footer() {
               <h3 className="text-xs font-semibold text-white mb-3 uppercase tracking-wide">Follow Us</h3>
               <div className="flex items-center gap-4">
                 <a 
-                  href="#" 
+                  href="https://www.instagram.com/prakash_gandham_/" 
                   aria-label="Instagram" 
                   className="text-blue-100 hover:text-white hover:scale-110 transition-all duration-300"
                 >
@@ -69,7 +69,7 @@ export default function Footer() {
                   </svg>
                 </a>
                 <a 
-                  href="#" 
+                  href="https://www.linkedin.com/in/gandhamkumarnslprakash/" 
                   aria-label="LinkedIn" 
                   className="text-blue-100 hover:text-white hover:scale-110 transition-all duration-300"
                 >
