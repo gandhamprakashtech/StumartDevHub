@@ -37,17 +37,31 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-blue-50 to-purple-100">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-blue-50 to-purple-100 overflow-x-hidden">
       {/* Hero Section */}
-      <section className="max-w-6xl mx-auto px-4 py-20 md:py-32 text-center relative overflow-hidden">
-        {/* Decorative background elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <section className="w-full relative overflow-hidden min-h-screen flex items-center">
+        {/* Background image (static) */}
+        <div
+          className="absolute inset-0 z-0 bg-center bg-no-repeat"
+          style={{
+            backgroundImage: "url('/bg-student-illustration.png.jpeg')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+          aria-hidden="true"
+        />
+
+        {/* Soft white overlay for readability (60-70% opacity) */}
+        <div className="absolute inset-0 bg-white/70 z-10 pointer-events-none" aria-hidden="true" />
+
+        {/* Decorative background elements (blobs) */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none z-20">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob"></div>
           <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-2000"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-40 animate-blob animation-delay-4000"></div>
         </div>
-        
-        <div className="relative z-10">
+
+        <div className="relative z-30 max-w-6xl mx-auto px-4 py-20 md:py-32 text-center">
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold text-gray-900 mb-2 sm:mb-4 md:mb-6 leading-tight">
             <span className="block sm:inline">Welcome to</span>
           </h1>
@@ -57,12 +71,12 @@ export default function Home() {
             </span>
           </div>
           <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-700 max-w-3xl mx-auto mb-3 sm:mb-4 leading-relaxed">
-            Your campus marketplace for buying and selling academic essentials
+            Why to carry extra stuff when already carrying your emotional baggage? Sell your extra items now
           </p>
           <p className="text-sm sm:text-base md:text-lg text-gray-600 max-w-2xl mx-auto mb-8 sm:mb-10">
-            Connect with verified students and exchange items safely within your college campus
+            A trusted platform connecting students to exchange academic essentials safely within your college community.
           </p>
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center w-full sm:w-auto">
+          <div className="flex justify-center items-center w-full sm:w-auto">
             <Link
               to="/products"
               className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-indigo-600 text-white text-base sm:text-lg font-semibold rounded-xl hover:bg-indigo-700 transition-all shadow-lg hover:shadow-xl transform hover:scale-105"
@@ -71,15 +85,6 @@ export default function Home() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
               Browse Products
-            </Link>
-            <Link
-              to="/register"
-              className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-white text-indigo-600 text-base sm:text-lg font-semibold rounded-xl border-2 border-indigo-600 hover:bg-indigo-50 transition-all shadow-md hover:shadow-lg"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-              Get Started
             </Link>
           </div>
         </div>
@@ -178,7 +183,8 @@ export default function Home() {
           Why Choose StuMart?
         </h2>
         <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
-          Join hundreds of students who are already buying and selling on our trusted platform
+          A trusted platform that connects verified students within the campus.
+
         </p>
         <div className="grid gap-8 md:grid-cols-3">
           <div className="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
@@ -206,7 +212,7 @@ export default function Home() {
               Campus-Based Exchange
             </h3>
             <p className="text-gray-600 text-center leading-relaxed">
-              No shipping fees or online payment hassles. Meet face-to-face and exchange items directly within your college campus.
+              A simple, safe, and campus-focused platform designed exclusively for students.
             </p>
           </div>
 
@@ -232,13 +238,11 @@ export default function Home() {
           How It Works
         </h2>
         <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
-          Get started in just 4 simple steps
+         Buy and sell academic essentials safely within your campus
         </p>
         <div className="grid gap-6 md:grid-cols-4">
           <div className="bg-white rounded-xl shadow-md p-6 text-center hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 relative">
-            <div className="absolute -top-3 -right-3 w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center font-bold text-sm shadow-lg">
-              1
-            </div>
+          
             <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg className="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -251,9 +255,7 @@ export default function Home() {
           </div>
 
           <div className="bg-white rounded-xl shadow-md p-6 text-center hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 relative">
-            <div className="absolute -top-3 -right-3 w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center font-bold text-sm shadow-lg">
-              2
-            </div>
+           
             <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -261,14 +263,12 @@ export default function Home() {
             </div>
             <h3 className="font-semibold text-gray-900 mb-2 text-lg">Post or Browse</h3>
             <p className="text-gray-600 text-sm leading-relaxed">
-              List items you want to sell with photos, or browse available products from other students.
+              List the items you want to sell with photos, or browse available products from other students.
             </p>
           </div>
 
           <div className="bg-white rounded-xl shadow-md p-6 text-center hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 relative">
-            <div className="absolute -top-3 -right-3 w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center font-bold text-sm shadow-lg">
-              3
-            </div>
+           
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -281,9 +281,7 @@ export default function Home() {
           </div>
 
           <div className="bg-white rounded-xl shadow-md p-6 text-center hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 relative">
-            <div className="absolute -top-3 -right-3 w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center font-bold text-sm shadow-lg">
-              4
-            </div>
+
             <div className="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg className="w-8 h-8 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -297,31 +295,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Call to Action Section */}
-      <section className="bg-gradient-to-r from-indigo-600 to-purple-600 py-16 mt-16">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-            Ready to Start Trading?
-          </h2>
-          <p className="text-xl text-indigo-100 mb-8 max-w-2xl mx-auto">
-            Join your fellow students and start buying or selling items on campus today. It's free, safe, and easy!
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              to="/register"
-              className="inline-block px-8 py-4 bg-white text-indigo-600 text-lg font-semibold rounded-xl hover:bg-gray-100 transition-all shadow-lg hover:shadow-xl transform hover:scale-105"
-            >
-              Create Account
-            </Link>
-            <Link
-              to="/products"
-              className="inline-block px-8 py-4 bg-transparent border-2 border-white text-white text-lg font-semibold rounded-xl hover:bg-white/10 transition-all shadow-lg hover:shadow-xl"
-            >
-              Browse Products
-            </Link>
-          </div>
-        </div>
-      </section>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate, useLocation } from "react-router";
 import { useEffect, useState } from "react";
 import {
   getCurrentUser,
@@ -8,6 +8,7 @@ import {
 
 export default function Navbar() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [student, setStudent] = useState(null);
@@ -81,6 +82,8 @@ export default function Navbar() {
     setIsMobileMenuOpen(false);
   };
 
+  const isActive = (path) => location.pathname === path;
+
   // Generate initials like "KS"
   const getInitials = (name) =>
     name
@@ -93,37 +96,80 @@ export default function Navbar() {
   return (
     <>
       {/* Navbar */}
-      <nav className="w-full bg-blue-50 border-b border-blue-200 relative">
-        <div className="max-w-6xl mx-auto px-4 min-h-[3.5rem] sm:h-14 flex items-center justify-between">
+      <nav className="w-full bg-gradient-to-r from-blue-700 via-purple-600 to-purple-700 relative">
+        <div className="max-w-6xl mx-auto px-4 min-h-[3.75rem] sm:h-14 flex items-center justify-between">
           
           {/* Logo and College Name */}
-          <Link to="/" className="flex items-center gap-2 sm:gap-3 flex-shrink-0" onClick={closeMobileMenu}>
-            <img
-              src="/StumartTransparent.png"
-              alt="StuMart Logo"
-              className="h-10 sm:h-12 w-auto flex-shrink-0"
-            />
+          <Link
+            to="/"
+            className="flex items-center gap-2 sm:gap-3 flex-shrink-0"
+            onClick={closeMobileMenu}
+          >
+            <div className="flex items-center justify-center bg-white/95 rounded-full p-1.5 shadow-sm ring-1 ring-white/70">
+              <img
+                src="/StumartTransparent.png"
+                alt="StuMart Logo"
+                className="h-8 sm:h-9 w-auto"
+              />
+            </div>
             <div className="flex flex-col justify-center min-w-0">
-              <span className="text-[11px] sm:text-sm md:text-base font-semibold text-gray-800 leading-tight whitespace-nowrap">
+              <span className="text-[20px] sm:text-base md:text-lg font-extrabold text-white leading-tight whitespace-nowrap tracking-wide drop-shadow-sm">
                 AANM & VVRSR
               </span>
-              <span className="text-[10px] sm:text-xs md:text-sm text-gray-600 leading-tight whitespace-nowrap">
-                Polytecnic
+              <span className="text-[12px] sm:text-xs md:text-sm text-blue-100 leading-tight whitespace-nowrap uppercase tracking-widest">
+                Polytechnic
               </span>
             </div>
           </Link>
 
           {/* Desktop Navigation - Hidden on mobile */}
-          <div className="hidden md:flex items-center gap-3 lg:gap-4 text-gray-600">
-            <Link to="/" className="hover:text-black transition">
+          <div className="hidden md:flex items-center justify-center gap-4 lg:gap-6 text-blue-100 flex-1">
+            <Link
+              to="/"
+              className={`relative px-2 py-1 transition ${
+                isActive("/")
+                  ? "text-white after:content-[''] after:absolute after:left-1/2 after:-translate-x-1/2 after:-bottom-1 after:h-1 after:w-6 after:rounded-full after:bg-indigo-300"
+                  : "hover:text-white"
+              }`}
+            >
               Home
             </Link>
-            <Link to="/customer-feedback" className="hover:text-black transition">
+            <Link
+              to="/contact"
+              className={`relative px-2 py-1 transition ${
+                isActive("/contact")
+                  ? "text-white after:content-[''] after:absolute after:left-1/2 after:-translate-x-1/2 after:-bottom-1 after:h-1 after:w-6 after:rounded-full after:bg-indigo-300"
+                  : "hover:text-white"
+              }`}
+            >
+              Contact Us
+            </Link>
+            <Link
+              to="/about"
+              className={`relative px-2 py-1 transition ${
+                isActive("/about")
+                  ? "text-white after:content-[''] after:absolute after:left-1/2 after:-translate-x-1/2 after:-bottom-1 after:h-1 after:w-6 after:rounded-full after:bg-indigo-300"
+                  : "hover:text-white"
+              }`}
+            >
+              About Us
+            </Link>
+            <Link
+              to="/customer-feedback"
+              className={`relative px-2 py-1 transition ${
+                isActive("/customer-feedback")
+                  ? "text-white after:content-[''] after:absolute after:left-1/2 after:-translate-x-1/2 after:-bottom-1 after:h-1 after:w-6 after:rounded-full after:bg-indigo-300"
+                  : "hover:text-white"
+              }`}
+            >
               Feedback
             </Link>
+          </div>
 
+          {/* Right side - Auth/Profile */}
+          <div className="hidden md:flex items-center gap-4">
             {isLoading ? (
-              <span className="text-sm">Loading...</span>
+              <span className="text-sm text-blue-100">Loading...</span>
             ) : isAuthenticated ? (
               <>
                 {/* Profile Avatar */}
@@ -132,8 +178,8 @@ export default function Navbar() {
                     to="/Profile"
                     title={student.name}
                     className="w-9 h-9 flex items-center justify-center rounded-full 
-                               bg-blue-600 text-white font-semibold
-                               hover:bg-blue-700 hover:ring-2 hover:ring-blue-300
+                               bg-white text-blue-700 font-semibold
+                               hover:bg-blue-50 hover:ring-2 hover:ring-blue-200
                                transition"
                   >
                     {getInitials(student.name)}
@@ -143,27 +189,34 @@ export default function Navbar() {
                 {/* Logout */}
                 <button
                   onClick={handleLogoutClick}
-                  className="hover:text-black transition"
+                  className="hover:text-white transition"
                 >
                   Logout
                 </button>
               </>
             ) : (
-              <>
-                <Link to="/login" className="hover:text-black transition">
+              <div className="flex items-center gap-3 text-blue-100">
+                <Link
+                  to="/login"
+                  className="hover:text-white transition"
+                >
                   Login
                 </Link>
-                <Link to="/register" className="hover:text-black transition">
+                <div className="h-6 w-px bg-blue-200/50"></div>
+                <Link
+                  to="/register"
+                  className="px-4 py-1.5 rounded-full border border-white/60 text-white hover:bg-white/15 transition"
+                >
                   Register
                 </Link>
-              </>
+              </div>
             )}
           </div>
 
           {/* Mobile Menu Button - Visible only on mobile */}
           <button
             onClick={toggleMobileMenu}
-            className="md:hidden p-2 text-gray-600 hover:text-black transition"
+            className="md:hidden p-2 text-blue-100 hover:text-white transition"
             aria-label="Toggle menu"
           >
             {isMobileMenuOpen ? (
@@ -178,73 +231,136 @@ export default function Navbar() {
           </button>
         </div>
 
-        {/* Mobile Menu - Slides down on mobile */}
+        {/* Mobile Menu Overlay - Click outside to close */}
         {isMobileMenuOpen && (
-          <div className="md:hidden bg-blue-50 border-t border-blue-200">
-            <div className="px-4 py-4 space-y-3">
-              <Link
-                to="/"
-                onClick={closeMobileMenu}
-                className="block py-2 text-gray-600 hover:text-black transition"
-              >
-                Home
-              </Link>
-              <Link
-                to="/customer-feedback"
-                onClick={closeMobileMenu}
-                className="block py-2 text-gray-600 hover:text-black transition"
-              >
-                Customer Feedback
-              </Link>
+          <div
+            className="fixed inset-0 bg-black/50 z-40 md:hidden"
+            onClick={closeMobileMenu}
+            aria-hidden="true"
+          />
+        )}
 
-              {isLoading ? (
-                <span className="block py-2 text-sm text-gray-600">Loading...</span>
-              ) : isAuthenticated ? (
-                <>
-                  {student && (
-                    <Link
-                      to="/Profile"
-                      onClick={closeMobileMenu}
-                      className="flex items-center gap-3 py-2 text-gray-600 hover:text-black transition"
-                    >
-                      <div className="w-9 h-9 flex items-center justify-center rounded-full 
-                                     bg-blue-600 text-white font-semibold">
-                        {getInitials(student.name)}
-                      </div>
-                      <span>Profile</span>
-                    </Link>
-                  )}
-                  <button
-                    onClick={() => {
-                      closeMobileMenu();
-                      handleLogoutClick();
-                    }}
-                    className="block w-full text-left py-2 text-gray-600 hover:text-black transition"
-                  >
-                    Logout
-                  </button>
-                </>
-              ) : (
-                <>
-                  <Link
-                    to="/login"
-                    onClick={closeMobileMenu}
-                    className="block py-2 text-gray-600 hover:text-black transition"
-                  >
-                    Login
-                  </Link>
-                  <Link
-                    to="/register"
-                    onClick={closeMobileMenu}
-                    className="block py-2 text-gray-600 hover:text-black transition"
-                  >
-                    Register
-                  </Link>
-                </>
-              )}
+        {/* Mobile Menu - Sidebar drawer */}
+        <div
+          className={`fixed top-0 left-0 h-full w-72 bg-white z-50 md:hidden transform transition-transform duration-300 ease-in-out ${
+            isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
+        >
+          {/* Sidebar Header */}
+          <div className="bg-gradient-to-r from-blue-700 via-purple-600 to-purple-700 p-6">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center bg-white/95 rounded-full p-2 shadow-sm">
+                <img
+                  src="/StumartTransparent.png"
+                  alt="StuMart Logo"
+                  className="h-10 w-auto"
+                />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-base font-extrabold text-white leading-tight tracking-wide">
+                  AANM & VVRSR
+                </span>
+                <span className="text-xs text-blue-100 leading-tight uppercase tracking-widest">
+                  Polytechnic
+                </span>
+              </div>
             </div>
           </div>
-        )}
+
+          {/* Menu Items */}
+          <div className="px-6 py-6 space-y-1 text-gray-700">
+            <Link
+              to="/"
+              onClick={closeMobileMenu}
+              className={`block py-3 px-3 rounded-lg transition ${
+                isActive("/")
+                  ? "bg-indigo-50 text-indigo-700 font-semibold border-l-4 border-indigo-600"
+                  : "hover:bg-gray-50"
+              }`}
+            >
+              Home
+            </Link>
+            <Link
+              to="/contact"
+              onClick={closeMobileMenu}
+              className={`block py-3 px-3 rounded-lg transition ${
+                isActive("/contact")
+                  ? "bg-indigo-50 text-indigo-700 font-semibold border-l-4 border-indigo-600"
+                  : "hover:bg-gray-50"
+              }`}
+            >
+              Contact Us
+            </Link>
+            <Link
+              to="/about"
+              onClick={closeMobileMenu}
+              className={`block py-3 px-3 rounded-lg transition ${
+                isActive("/about")
+                  ? "bg-indigo-50 text-indigo-700 font-semibold border-l-4 border-indigo-600"
+                  : "hover:bg-gray-50"
+              }`}
+            >
+              About Us
+            </Link>
+            <Link
+              to="/customer-feedback"
+              onClick={closeMobileMenu}
+              className={`block py-3 px-3 rounded-lg transition ${
+                isActive("/customer-feedback")
+                  ? "bg-indigo-50 text-indigo-700 font-semibold border-l-4 border-indigo-600"
+                  : "hover:bg-gray-50"
+              }`}
+            >
+              Customer Feedback
+            </Link>
+
+            {isLoading ? (
+              <span className="block py-3 px-3 text-sm text-gray-500">Loading...</span>
+            ) : isAuthenticated ? (
+              <>
+                {student && (
+                  <Link
+                    to="/Profile"
+                    onClick={closeMobileMenu}
+                    className="flex items-center gap-3 py-3 px-3 hover:bg-gray-50 rounded-lg transition"
+                  >
+                    <div className="w-9 h-9 flex items-center justify-center rounded-full 
+                                   bg-indigo-600 text-white font-semibold">
+                      {getInitials(student.name)}
+                    </div>
+                    <span>Profile</span>
+                  </Link>
+                )}
+                <button
+                  onClick={() => {
+                    closeMobileMenu();
+                    handleLogoutClick();
+                  }}
+                  className="block w-full text-left py-3 px-3 hover:bg-gray-50 rounded-lg transition"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <div className="pt-4 space-y-2">
+                <Link
+                  to="/login"
+                  onClick={closeMobileMenu}
+                  className="block py-3 px-4 text-center border border-indigo-600 text-indigo-600 rounded-lg hover:bg-indigo-50 transition font-medium"
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/register"
+                  onClick={closeMobileMenu}
+                  className="block py-3 px-4 text-center bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-medium"
+                >
+                  Register
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
       </nav>
 
       {/* Logout Confirmation Modal */}
