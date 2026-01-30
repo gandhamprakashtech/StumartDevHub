@@ -142,8 +142,19 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="relative min-h-screen flex items-center justify-center px-4 py-6 sm:px-6 lg:px-8 overflow-hidden">
+      <div
+        className="absolute inset-0 bg-center bg-no-repeat"
+        style={{
+          backgroundImage: "url('/bg-student-illustration.png.jpeg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+        aria-hidden="true"
+      />
+      <div className="absolute inset-0 bg-white/70" aria-hidden="true" />
+
+      <div className="relative z-10 max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Sign in to your  account          </h2>

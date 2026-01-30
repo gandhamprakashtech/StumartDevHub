@@ -305,9 +305,20 @@ export default function Register() {
 
   /* ---------- UI ---------- */
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-indigo-50 via-blue-50 to-purple-100">
+    <div className="relative min-h-screen flex items-center justify-center px-4 py-10 overflow-hidden">
       <div
-        className={`w-full max-w-md p-8 rounded-2xl bg-white/20 backdrop-blur-xl
+        className="absolute inset-0 bg-center bg-no-repeat"
+        style={{
+          backgroundImage: "url('/bg-student-illustration.png.jpeg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+        aria-hidden="true"
+      />
+      <div className="absolute inset-0 bg-white/70" aria-hidden="true" />
+
+      <div
+        className={`relative z-10 w-full max-w-md p-8 rounded-2xl bg-white/20 backdrop-blur-xl
         border border-white/30 shadow-2xl space-y-6
         ${shake ? 'animate-shake' : ''}`}
       >
