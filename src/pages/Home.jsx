@@ -1,16 +1,32 @@
 import { Link, useNavigate } from "react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { getProducts } from "../services/productService";
+
+const CARD_WIDTH = 324; // 300px card + 24px margin (mx-3)
 
 export default function Home() {
   const navigate = useNavigate();
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [isLoadingProducts, setIsLoadingProducts] = useState(true);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [touchStartX, setTouchStartX] = useState(null);
-  const [touchEndX, setTouchEndX] = useState(null);
+  // Infinite carousel: extended list is [last, ...products, first], real indices 1..n
+  const [currentIndex, setCurrentIndex] = useState(1);
+  const [isSnapping, setIsSnapping] = useState(false);
+  const touchStartX = useRef(null);
+  const touchEndX = useRef(null);
   const [isHovering, setIsHovering] = useState(false);
   const [showScrollIndicator, setShowScrollIndicator] = useState(true);
+
+  const n = featuredProducts.length;
+  // [last, ...products, first, ...products] so the viewport is always filled (no gap to the right)
+  const extendedProducts =
+    n > 0
+      ? [
+          featuredProducts[n - 1],
+          ...featuredProducts,
+          featuredProducts[0],
+          ...featuredProducts,
+        ]
+      : [];
 
   useEffect(() => {
     const fetchFeaturedProducts = async () => {
@@ -27,39 +43,57 @@ export default function Home() {
     };
     fetchFeaturedProducts();
   }, []);
+
   useEffect(() => {
-    if (featuredProducts.length === 0 || isHovering) return;
+    if (n === 0 || isHovering) return;
 
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % featuredProducts.length);
+      setCurrentIndex((prev) => Math.min(prev + 1, n + 1));
     }, 2800);
 
     return () => clearInterval(interval);
-  }, [featuredProducts, isHovering]);
+  }, [n, isHovering]);
+
+  // After sliding to a clone, snap to the real position without animation (seamless loop)
+  const handleCarouselTransitionEnd = () => {
+    if (n === 0) return;
+    if (currentIndex === n + 1) {
+      setIsSnapping(true);
+      requestAnimationFrame(() => {
+        setCurrentIndex(1);
+        requestAnimationFrame(() => setIsSnapping(false));
+      });
+    } else if (currentIndex === 0) {
+      setIsSnapping(true);
+      requestAnimationFrame(() => {
+        setCurrentIndex(n);
+        requestAnimationFrame(() => setIsSnapping(false));
+      });
+    }
+  };
 
   const handleTouchStart = (e) => {
-    setTouchStartX(e.touches[0].clientX);
+    touchStartX.current = e.touches[0].clientX;
   };
 
   const handleTouchMove = (e) => {
-    setTouchEndX(e.touches[0].clientX);
+    touchEndX.current = e.touches[0].clientX;
   };
 
   const handleTouchEnd = () => {
-    if (!touchStartX || !touchEndX) return;
+    if (touchStartX.current == null || touchEndX.current == null) return;
 
-    const distance = touchStartX - touchEndX;
+    const distance = touchStartX.current - touchEndX.current;
 
     if (distance > 50) {
-      setCurrentIndex((prev) => (prev + 1) % featuredProducts.length);
+      setCurrentIndex((prev) => prev + 1);
     }
-
     if (distance < -50) {
-      setCurrentIndex((prev) => (prev - 1 + featuredProducts.length) % featuredProducts.length);
+      setCurrentIndex((prev) => prev - 1);
     }
 
-    setTouchStartX(null);
-    setTouchEndX(null);
+    touchStartX.current = null;
+    touchEndX.current = null;
   };
 
   const formatPrice = (price) => {
@@ -190,7 +224,7 @@ export default function Home() {
             >
               {/* Previous Button */}
               <button
-                onClick={() => setCurrentIndex((prev) => (prev - 1 + featuredProducts.length) % featuredProducts.length)}
+                onClick={() => setCurrentIndex((prev) => prev - 1)}
                 className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 bg-white/80 hover:bg-white rounded-full p-3 shadow-lg transition-all duration-300"
                 aria-label="Previous product"
               >
@@ -202,16 +236,18 @@ export default function Home() {
               <div
                 className="flex transition-transform duration-500 ease-in-out"
                 style={{
-                  transform: `translateX(-${((currentIndex % featuredProducts.length + featuredProducts.length) % featuredProducts.length) * 320}px)`,
+                  transform: `translateX(-${currentIndex * CARD_WIDTH}px)`,
+                  transition: isSnapping ? "none" : undefined,
                 }}
+                onTransitionEnd={handleCarouselTransitionEnd}
               >
-                {featuredProducts.map((product, index) => (
+                {extendedProducts.map((product, index) => (
                   <div
                     key={`${product.id}-${index}`}
                     onClick={() => navigate(`/products/${product.id}`)}
                     className={`min-w-[300px] mx-3 bg-white rounded-xl shadow-md cursor-pointer transition-all duration-500
                       ${
-                        index === (currentIndex % featuredProducts.length)
+                        index === currentIndex
                           ? "scale-110 shadow-xl z-10"
                           : "scale-95 opacity-80"
                       }
@@ -250,7 +286,7 @@ export default function Home() {
 
               {/* Next Button */}
               <button
-                onClick={() => setCurrentIndex((prev) => (prev + 1) % featuredProducts.length)}
+                onClick={() => setCurrentIndex((prev) => prev + 1)}
                 className="absolute right-4 top-1/2 transform -translate-y-1/2 z-20 bg-white/80 hover:bg-white rounded-full p-3 shadow-lg transition-all duration-300"
                 aria-label="Next product"
               >
