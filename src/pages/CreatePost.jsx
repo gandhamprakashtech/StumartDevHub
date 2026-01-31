@@ -95,13 +95,22 @@ export default function CreatePost() {
    */
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    
+    // For price field, only allow integers
+    if (name === 'price') {
+      // Only allow digits
+      const intValue = value.replace(/[^0-9]/g, '');
+      setFormData((prev) => ({ ...prev, [name]: intValue }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
+    
     setErrors((prev) => ({ ...prev, [name]: '' }));
     setSubmitError('');
   };
 
   /**
-   * Handle image selection
+   * Handle image selection - only 1 image allowed
    */
   const handleImageSelect = (e) => {
     const files = Array.from(e.target.files);
@@ -109,23 +118,31 @@ export default function CreatePost() {
     const validFiles = [];
     const newPreviews = [];
 
-    files.forEach((file, index) => {
+    // Only allow 1 image total
+    if (selectedImages.length >= 1) {
+      setImageErrors(['Only one photo is allowed']);
+      e.target.value = '';
+      return;
+    }
+
+    files.forEach((file) => {
       const validation = validateImageFile(file);
       if (validation.valid) {
         validFiles.push(file);
         newPreviews.push(getImagePreview(file));
       } else {
-        newErrors.push(`Image ${selectedImages.length + index + 1}: ${validation.error}`);
+        newErrors.push(`Image: ${validation.error}`);
       }
     });
 
     if (newErrors.length > 0) {
-      setImageErrors((prev) => [...prev, ...newErrors]);
+      setImageErrors(newErrors);
     }
 
+    // Only take first valid image
     if (validFiles.length > 0) {
-      setSelectedImages((prev) => [...prev, ...validFiles]);
-      setImagePreviews((prev) => [...prev, ...newPreviews]);
+      setSelectedImages([validFiles[0]]);
+      setImagePreviews([newPreviews[0]]);
     }
 
     // Reset input
@@ -166,19 +183,25 @@ export default function CreatePost() {
       newErrors.description = 'Description is required';
     } else if (formData.description.trim().length < 10) {
       newErrors.description = 'Description must be at least 10 characters';
+    } else if (formData.description.trim().length > 425) {
+      newErrors.description = 'Description must be less than 425 characters';
     }
 
     if (!formData.price) {
       newErrors.price = 'Price is required';
     } else {
-      const price = parseFloat(formData.price);
+      const price = parseInt(formData.price);
       if (isNaN(price) || price < 0) {
-        newErrors.price = 'Please enter a valid price (0 or greater)';
+        newErrors.price = 'Please enter a valid price';
+      } else if (price > 10000) {
+        newErrors.price = 'Maximum price is ₹10,000';
       }
     }
 
     if (selectedImages.length === 0) {
-      newErrors.images = 'Please select at least one image';
+      newErrors.images = 'Please select one photo';
+    } else if (selectedImages.length > 1) {
+      newErrors.images = 'Only one photo is allowed';
     }
 
     setErrors(newErrors);
@@ -232,7 +255,7 @@ export default function CreatePost() {
         category: formData.category,
         title: formData.title.trim(),
         description: formData.description.trim(),
-        price: parseFloat(formData.price),
+        price: parseInt(formData.price),
         imageUrls: uploadResult.urls,
       };
 
@@ -382,6 +405,7 @@ export default function CreatePost() {
               onChange={handleChange}
               required
               rows={6}
+              maxLength={425}
               placeholder="Describe your product in detail..."
               className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none ${
                 errors.description ? 'border-red-500' : 'border-gray-300'
@@ -392,8 +416,7 @@ export default function CreatePost() {
                 <p className="text-sm text-red-600">{errors.description}</p>
               ) : (
                 <p className="text-sm text-gray-500">
-                  {formData.description.length} characters
-                  {formData.description.length < 10 && ' (minimum 10 characters)'}
+                  {formData.description.length}/425 characters
                 </p>
               )}
             </div>
@@ -405,15 +428,27 @@ export default function CreatePost() {
               Price (₹) <span className="text-red-500">*</span>
             </label>
             <input
-              type="number"
+              type="text"
               id="price"
               name="price"
               value={formData.price}
               onChange={handleChange}
+              onKeyPress={(e) => {
+                // Only allow digits
+                if (!/[0-9]/.test(e.key)) {
+                  e.preventDefault();
+                }
+              }}
+              onKeyDown={(e) => {
+                // Block arrow keys, +, -, e, E
+                if (['ArrowUp', 'ArrowDown', '+', '-', 'e', 'E'].includes(e.key)) {
+                  e.preventDefault();
+                }
+              }}
               required
               min="0"
-              step="0.01"
-              placeholder="0.00"
+              max="10000"
+              placeholder="0"
               className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
                 errors.price ? 'border-red-500' : 'border-gray-300'
               }`}
@@ -426,7 +461,7 @@ export default function CreatePost() {
           {/* Image Upload */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Photos <span className="text-red-500">*</span>
+              Photo <span className="text-red-500">*</span>
             </label>
             <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-indigo-400 transition-colors">
               <div className="space-y-1 text-center">
