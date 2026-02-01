@@ -42,6 +42,14 @@ export default function Login() {
     // Password validation
     if (!formData.password) {
       newErrors.password = 'Password is required';
+    } else if (formData.password.length < 6) {
+      newErrors.password = 'Minimum 6 characters';
+    } else if (formData.password.length > 12) {
+      newErrors.password = 'Maximum 12 characters';
+    } else if (formData.password.length < 6) {
+      newErrors.password = 'Minimum 6 characters';
+    } else if (formData.password.length > 12) {
+      newErrors.password = 'Maximum 12 characters';
     }
 
     setErrors(newErrors);
@@ -207,14 +215,14 @@ export default function Login() {
       required
       value={formData.password}
       onChange={handleChange}
-      className="appearance-none rounded-none relative block w-full px-3 py-2 pr-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+      className="appearance-none rounded-md relative block w-full px-3 py-2 pr-10 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
       placeholder="Password"
     />
     {/* Eye Icon */}
     <button
       type="button"
       onClick={() => setShowPassword(!showPassword)}
-      className="flex cursor-pointer items-center pl-3 pr-3 text-gray-500 border border-gray-300 hover:text-gray-700"
+      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-indigo-600"
       aria-label={showPassword ? 'Hide password' : 'Show password'}
     >
       {showPassword ? (
