@@ -198,6 +198,10 @@ export default function Register() {
       newErrors.password = 'Password is required';
     } else if (formData.password.length < 6) {
       newErrors.password = 'Minimum 6 characters';
+    } else if (formData.password.length > 12) {
+      newErrors.password = 'Maximum 12 characters';
+    } else if (!/\d/.test(formData.password)) {
+      newErrors.password = 'Must contain at least one number';
     }
     if (!formData.confirmPassword) {
       newErrors.confirmPassword = 'Confirm your password';
@@ -289,17 +293,16 @@ export default function Register() {
 
   /* ---------- Icons ---------- */
   const eyeIcon = (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M2.5 12s3.5-6.5 9.5-6.5S21.5 12 21.5 12s-3.5 6.5-9.5 6.5S2.5 12 2.5 12z" />
-      <circle cx="12" cy="12" r="3" />
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+      <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
     </svg>
   );
 
   const eyeOffIcon = (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 19.5c-5.99 0-9.5-7.5-9.5-7.5a21.12 21.12 0 0 1 4.36-5.2" />
-      <path d="M1 1l22 22" />
-      <path d="M9.88 9.88a3 3 0 0 0 4.24 4.24" />
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M13.875 18.825A10.05 10.05 0 0112 19c-5.523 0-10-4.477-10-10 0-1.02.152-2.004.437-2.93M6.343 6.343A9.956 9.956 0 0112 5c5.523 0 10 4.477 10 10a9.956 9.956 0 01-1.343 5.657M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+      <path d="M3 3l18 18" />
     </svg>
   );
 
@@ -603,7 +606,7 @@ export default function Register() {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="cursor-pointer absolute right-4 top-5.5 text-gray-600 hover:text-indigo-600"
+              className="absolute right-4 top-5.5 text-gray-500 hover:text-indigo-600"
             >
               {showPassword ? eyeOffIcon : eyeIcon}
             </button>
@@ -635,7 +638,7 @@ export default function Register() {
             <button
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="cursor-pointer absolute right-4 top-5.5 text-gray-600 hover:text-indigo-600"
+              className="absolute right-4 top-5.5 text-gray-500 hover:text-indigo-600"
             >
               {showConfirmPassword ? eyeOffIcon : eyeIcon}
             </button>
