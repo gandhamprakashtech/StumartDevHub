@@ -13,7 +13,7 @@ import Profile from "./pages/Profile";
 import MyPosts from "./pages/MyPosts";
 import CustomerFeedback from "./pages/CustomerFeedback";
 import AdminPINManagement from "./pages/AdminPINManagement";
-import LikedPost from "./pages/likedpost";
+import LikedPost from "./pages/Likedpost";
   // ✅ IMPORTANT
 
 export const routes = [
