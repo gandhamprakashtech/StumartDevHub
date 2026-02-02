@@ -67,11 +67,11 @@ export default function ProductDetail() {
 
   // Format price as currency
   const formatPrice = (price) => {
-    const numPrice = parseFloat(price);
+    const numPrice = parseInt(price, 10);
     if (numPrice === 0) {
       return 'FREE';
     }
-    return `₹ ${numPrice.toFixed(2)}`;
+    return `₹ ${numPrice.toFixed(0)}`;
   };
 
   // Format category name
@@ -147,7 +147,7 @@ export default function ProductDetail() {
                 <img
                   src={images[selectedImageIndex] || 'https://via.placeholder.com/600x400?text=No+Image'}
                   alt={product.title}
-                  className="w-full h-96 object-contain rounded-lg"
+                  className="w-full h-96 object-contain rounded-lg bg-gray-50"
                   onError={(e) => {
                     e.target.src = 'https://via.placeholder.com/600x400?text=No+Image';
                   }}
@@ -169,7 +169,7 @@ export default function ProductDetail() {
                       <img
                         src={imageUrl}
                         alt={`${product.title} ${index + 1}`}
-                        className="w-full h-20 object-cover"
+                        className="w-full h-20 object-contain bg-gray-50"
                         onError={(e) => {
                           e.target.src = 'https://via.placeholder.com/150x100?text=No+Image';
                         }}
@@ -199,7 +199,7 @@ export default function ProductDetail() {
 
               {/* Price */}
               <div className="mb-6">
-              <p className={`text-4xl font-bold ${parseFloat(product.price) === 0 ? 'text-green-600' : 'text-indigo-600'}`}>
+              <p className={`text-4xl font-bold ${parseInt(product.price, 10) === 0 ? 'text-green-600' : 'text-indigo-600'}`}>
   {formatPrice(product.price)}
 </p>
               </div>

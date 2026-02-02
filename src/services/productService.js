@@ -75,7 +75,7 @@ export const createProduct = async (productData) => {
       category: productData.category,
       title: productData.title.trim(),
       description: productData.description.trim(),
-      price: parseFloat(productData.price),
+      price: parseInt(productData.price, 10),
       image_urls: productData.imageUrls,
       status: 'active',
     };
