@@ -14,7 +14,7 @@ export default function Home() {
   const touchStartX = useRef(null);
   const touchEndX = useRef(null);
   const [isHovering, setIsHovering] = useState(false);
-  const [showScrollIndicator, setShowScrollIndicator] = useState(true);
+  const [showScrollIndicator, setShowScrollIndicator] = useState(false);
 
   const n = featuredProducts.length;
   // [last, ...products, first, ...products] so the viewport is always filled (no gap to the right)
@@ -53,6 +53,24 @@ export default function Home() {
 
     return () => clearInterval(interval);
   }, [n, isHovering]);
+
+  useEffect(() => {
+    const updateScrollIndicator = () => {
+      const scrollPosition = window.scrollY + window.innerHeight;
+      const pageHeight = document.documentElement.scrollHeight;
+      const isAtBottom = scrollPosition >= pageHeight - 8;
+      setShowScrollIndicator(!isAtBottom);
+    };
+
+    updateScrollIndicator();
+    window.addEventListener("scroll", updateScrollIndicator, { passive: true });
+    window.addEventListener("resize", updateScrollIndicator);
+
+    return () => {
+      window.removeEventListener("scroll", updateScrollIndicator);
+      window.removeEventListener("resize", updateScrollIndicator);
+    };
+  }, []);
 
   // After sliding to a clone, snap to the real position without animation (seamless loop)
   const handleCarouselTransitionEnd = () => {
@@ -97,9 +115,9 @@ export default function Home() {
   };
 
   const formatPrice = (price) => {
-    const numPrice = parseFloat(price);
+    const numPrice = parseInt(price, 10);
     if (numPrice === 0) return "FREE";
-    return `₹ ${numPrice.toFixed(2)}`;
+    return `₹ ${numPrice.toFixed(0)}`;
   };
 
   const getFirstImage = (imageUrls) => {
@@ -134,7 +152,7 @@ export default function Home() {
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-40 animate-blob animation-delay-4000"></div>
         </div>
 
-        <div className="relative z-30 max-w-6xl mx-auto px-4 py-8 sm:py-12 md:py-20 lg:py-28 text-center">
+        <div className="relative z-30 max-w-6xl mx-auto px-4 py-10 sm:py-12 md:py-20 lg:py-28 text-center">
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl xl:text-8xl font-extrabold text-gray-900 mb-1 sm:mb-3 md:mb-4 lg:mb-5 leading-tight animate-fade-in-up">
             <span className="block sm:inline">Welcome to</span>
           </h1>
@@ -149,22 +167,20 @@ export default function Home() {
           
           {/* Scroll Indicator */}
           {showScrollIndicator && (
-            <div 
-              className="flex justify-center mb-4 sm:mb-6 md:mb-8 cursor-pointer hover:opacity-80 transition-opacity z-40"
+            <button
+              type="button"
+              className="fixed left-1/2 bottom-6 -translate-x-1/2 flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/80 shadow-md hover:shadow-lg hover:opacity-90 transition-all z-50"
               onClick={() => {
-                const featuredSection = document.getElementById('featured-products');
-                if (featuredSection) {
-                  featuredSection.scrollIntoView({ behavior: 'smooth' });
-                }
-                setShowScrollIndicator(false);
+                window.scrollBy({ top: window.innerHeight * 0.8, behavior: "smooth" });
               }}
+              aria-label="Scroll down"
             >
               <div className="animate-bounce">
-                <svg className="w-6 h-6 sm:w-8 sm:h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6 sm:w-7 sm:h-7 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                 </svg>
               </div>
-            </div>
+            </button>
           )}
           
           <p className="text-xs sm:text-sm md:text-base lg:text-lg font-normal text-gray-600 max-w-2xl mx-auto mb-4 sm:mb-6 md:mb-8 lg:mb-10 animate-fade-in-up-delay-3">
@@ -257,7 +273,7 @@ export default function Home() {
                       <img
                         src={getFirstImage(product.image_urls)}
                         alt={product.title}
-                        className="w-full h-full object-contain"
+                        className="w-full h-full object-contain bg-gray-50"
                         loading="lazy"
                         onError={(e) => {
                           e.target.src = "https://via.placeholder.com/400x300?text=No+Image";
@@ -272,7 +288,7 @@ export default function Home() {
 
                       <p
                         className={`text-xl font-bold ${
-                          parseFloat(product.price) === 0
+                          parseInt(product.price, 10) === 0
                             ? "text-green-600"
                             : "text-indigo-600"
                         }`}
