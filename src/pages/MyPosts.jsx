@@ -74,7 +74,8 @@ export default function MyPosts() {
 
   // Format price as currency
   const formatPrice = (price) => {
-    return `₹ ${parseFloat(price).toFixed(2)}`;
+    const numPrice = parseInt(price, 10);
+    return `₹ ${numPrice.toFixed(0)}`;
   };
 
   // Get first image from image_urls array
@@ -185,35 +186,35 @@ export default function MyPosts() {
 
   // Products grid
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gray-50 py-6 px-3 sm:px-6 lg:px-8">
+      <div className="max-w-full sm:max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8 flex items-center justify-between">
+        <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-1">
               Your Posts
             </h1>
-            <p className="text-gray-600">Manage and view all your product posts</p>
+            <p className="text-sm sm:text-base text-gray-600">Manage and view all your product posts</p>
           </div>
          
         </div>
 
         {/* Products Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
           {products.map((product) => (
             <div
               key={product.id}
-              className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200"
+              className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-200"
             >
               {/* Product Image */}
               <div 
-                className="relative h-48 w-full bg-gray-200 cursor-pointer"
+                className="relative h-40 sm:h-44 md:h-48 w-full bg-gray-200 cursor-pointer"
                 onClick={() => navigate(`/products/${product.id}`)}
               >
                 <img
                   src={getFirstImage(product.image_urls)}
                   alt={product.title}
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-contain bg-gray-50"
                   loading="lazy"
                   onError={(e) => {
                     e.target.src = 'https://via.placeholder.com/400x300?text=No+Image';
@@ -228,17 +229,17 @@ export default function MyPosts() {
               </div>
 
               {/* Product Info */}
-              <div className="p-4">
+              <div className="p-3 sm:p-4">
                 <h3 
-                  className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 min-h-[3rem] cursor-pointer hover:text-indigo-600 transition-colors"
+                  className="text-base sm:text-lg font-semibold text-gray-900 mb-1.5 line-clamp-2 min-h-[2.5rem] cursor-pointer hover:text-indigo-600 transition-colors"
                   onClick={() => navigate(`/products/${product.id}`)}
                 >
                   {product.title}
                 </h3>
-                <p className="text-2xl font-bold text-indigo-600 mb-2">
+                <p className="text-xl sm:text-2xl font-bold text-indigo-600 mb-1.5">
                   {formatPrice(product.price)}
                 </p>
-                <p className="text-sm text-gray-500 mb-4">
+                <p className="text-xs sm:text-sm text-gray-500 mb-3">
                   Created: {formatDate(product.created_at)}
                 </p>
 
