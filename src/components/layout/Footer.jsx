@@ -10,7 +10,7 @@ export default function Footer() {
             {/* Logo */}
             <div className="flex-shrink-0">
               <img 
-                src="/stumart.jpg" 
+                src="\newlogo.jpeg" 
                 alt="StuMart Logo" 
                 className="w-14 h-14 object-contain drop-shadow-lg"
               />

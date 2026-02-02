@@ -137,7 +137,7 @@ export default function Products() {
       const rangeOption = priceRangeOptions.find(opt => opt.value === selectedPriceRange);
       if (rangeOption) {
         filtered = filtered.filter((product) => {
-          const price = parseFloat(product.price) || 0;
+          const price = parseInt(product.price, 10) || 0;
           const min = rangeOption.min;
           const max = rangeOption.max === Infinity ? Number.MAX_SAFE_INTEGER : rangeOption.max;
           return price >= min && price <= max;
@@ -147,14 +147,14 @@ export default function Products() {
 
     // Apply free items filter
     if (showFreeOnly) {
-      filtered = filtered.filter((product) => parseFloat(product.price) === 0);
+      filtered = filtered.filter((product) => parseInt(product.price, 10) === 0);
     }
 
     // Apply sorting
     if (sortOrder === 'price-high-low') {
-      filtered.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+      filtered.sort((a, b) => parseInt(b.price, 10) - parseInt(a.price, 10));
     } else if (sortOrder === 'price-low-high') {
-      filtered.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+      filtered.sort((a, b) => parseInt(a.price, 10) - parseInt(b.price, 10));
     } else if (sortOrder === 'newest') {
       filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     }
@@ -164,11 +164,11 @@ export default function Products() {
 
   // Format price as currency
   const formatPrice = (price) => {
-    const numPrice = parseFloat(price);
+    const numPrice = parseInt(price, 10);
     if (numPrice === 0) {
       return 'FREE';
     }
-    return `₹ ${numPrice.toFixed(2)}`;
+    return `₹ ${numPrice.toFixed(0)}`;
   };
 
   // Get first image from image_urls array
@@ -390,7 +390,7 @@ export default function Products() {
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="max-w-full w-full mx-auto px-3 sm:px-4 lg:px-6 py-4">
             <div className="relative">
               <input
                 id="search-input"
@@ -411,7 +411,7 @@ export default function Products() {
             </div>
           </div>
         </div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="max-w-full w-full mx-auto px-3 sm:px-4 lg:px-6 py-12">
           <div className="bg-white rounded-lg shadow-md p-12 text-center">
             <svg className="mx-auto h-24 w-24 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
@@ -426,10 +426,10 @@ export default function Products() {
 
   // Products grid
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 w-full">
       {/* Search Bar - Top */}
       <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="max-w-full w-full mx-auto px-3 sm:px-4 lg:px-6 py-4">
           <div className="relative">
             <input
               id="search-input"
@@ -467,8 +467,8 @@ export default function Products() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="flex flex-col lg:flex-row gap-6">
+      <div className="max-w-full w-full mx-auto px-3 sm:px-4 lg:px-6 py-5">
+        <div className="flex flex-col lg:flex-row gap-5">
           {/* Filter Sidebar - Desktop */}
           <div className="hidden lg:block">
             <FilterSidebar />
@@ -565,19 +565,19 @@ export default function Products() {
 
             {/* Products Grid */}
             {filteredProducts.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
                 {filteredProducts.map((product) => (
                   <div
                     key={product.id}
-                    className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200 cursor-pointer"
+                    className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-200 cursor-pointer"
                     onClick={() => navigate(`/products/${product.id}`)}
                   >
                     {/* Product Image */}
-                    <div className="relative h-48 w-full bg-gray-200">
+                    <div className="relative h-40 sm:h-44 md:h-48 w-full bg-gray-100">
                       <img
                         src={getFirstImage(product.image_urls)}
                         alt={product.title}
-                        className="w-full h-full object-contain"
+                        className="w-full h-full object-contain bg-gray-50"
                         loading="lazy"
                         onError={(e) => {
                           e.target.src = 'https://via.placeholder.com/400x300?text=No+Image';
@@ -586,11 +586,11 @@ export default function Products() {
                     </div>
 
                     {/* Product Info */}
-                    <div className="p-4">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 min-h-[3rem]">
+                    <div className="p-3 sm:p-4">
+                      <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-1.5 line-clamp-2 min-h-[2.5rem]">
                         {product.title}
                       </h3>
-                      <p className={`text-2xl font-bold ${parseFloat(product.price) === 0 ? 'text-green-600' : 'text-indigo-600'}`}>
+                      <p className={`text-xl sm:text-2xl font-bold ${parseInt(product.price, 10) === 0 ? 'text-green-600' : 'text-indigo-600'}`}>
                         {formatPrice(product.price)}
                       </p>
                     </div>
