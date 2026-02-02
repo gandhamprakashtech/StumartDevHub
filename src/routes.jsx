@@ -13,7 +13,8 @@ import Profile from "./pages/Profile";
 import MyPosts from "./pages/MyPosts";
 import CustomerFeedback from "./pages/CustomerFeedback";
 import AdminPINManagement from "./pages/AdminPINManagement";
-import LikedPost from "./pages/LikedPost";   // ✅ IMPORTANT
+import LikedPost from "./pages/likedpost";
+  // ✅ IMPORTANT
 
 export const routes = [
   { path: "/", element: <Home /> },
