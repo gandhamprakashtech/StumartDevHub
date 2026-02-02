@@ -1,212 +1,71 @@
 @import "tailwindcss";
 
-/* Font family configuration */
+/* ------------------------------
+   Base styles & fonts
+-------------------------------- */
 @layer base {
   :root {
     --font-sans: 'Inter', sans-serif;
     --font-heading: 'Poppins', sans-serif;
     --font-brand: 'Cinzel', serif;
   }
-  
+
   body {
+    @apply font-sans bg-white text-gray-900 transition-colors duration-300;
     font-family: 'Inter', sans-serif;
+  }
+
+  .dark body {
+    @apply bg-slate-900 text-slate-200;
   }
 }
 
+/* ------------------------------
+   Font utilities
+-------------------------------- */
 @layer components {
-  .font-cinzel {
-    font-family: 'Cinzel', serif;
-  }
-  
-  .font-poppins {
-    font-family: 'Poppins', sans-serif;
-  }
-  
-  .font-inter {
-    font-family: 'Inter', sans-serif;
-  }
+  .font-cinzel { font-family: 'Cinzel', serif; }
+  .font-poppins { font-family: 'Poppins', sans-serif; }
+  .font-inter { font-family: 'Inter', sans-serif; }
 }
 
-/* Custom animations for Home page */
+/* ------------------------------
+   Animations
+-------------------------------- */
 @keyframes blob {
-  0%, 100% {
-    transform: translate(0, 0) scale(1);
-  }
-  33% {
-    transform: translate(30px, -50px) scale(1.1);
-  }
-  66% {
-    transform: translate(-20px, 20px) scale(0.9);
-  }
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
 }
 
 @keyframes gradient {
-  0%, 100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes bounce-slow {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-12px);
-  }
-}
-
-.animate-blob {
-  animation: blob 7s infinite;
-}
-
-.animation-delay-2000 {
-  animation-delay: 2s;
-}
-
-.animation-delay-4000 {
-  animation-delay: 4s;
-}
-
+.animate-blob { animation: blob 7s infinite; }
 .animate-gradient {
   background-size: 200% 200%;
   animation: gradient 3s ease infinite;
 }
 
-/* Remove number input spinner arrows */
-input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-input[type="number"] {
-  -moz-appearance: textfield;
-}
-
-/* Dark Mode Styles */
-:root {
-  color-scheme: light;
-}
-
+/* ------------------------------
+   Dark mode overrides
+-------------------------------- */
 .dark {
   color-scheme: dark;
 }
 
-/* Dark mode for main content */
-.dark {
-  background-color: #0f172a;
-  color: #e2e8f0;
-}
+.dark .bg-white { @apply bg-gray-800; }
 
-/* Dark mode for sections */
-.dark .bg-gradient-to-br {
-  background: linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #1e293b 100%);
-}
+.dark .text-gray-900 { @apply text-gray-100; }
+.dark .text-gray-700 { @apply text-gray-300; }
+.dark .text-gray-600 { @apply text-gray-400; }
 
-/* Dark mode text colors */
-.dark .text-gray-900 {
-  @apply text-gray-100;
-}
+.dark section { @apply bg-gray-900; }
 
-.dark .text-gray-600 {
-  @apply text-gray-400;
-}
-
-.dark .text-gray-700 {
-  @apply text-gray-300;
-}
-
-/* Dark mode for cards */
-.dark .bg-white {
-  @apply bg-gray-800;
-}
-
-.dark .shadow-md,
-.dark .shadow-lg {
-  @apply shadow-black/40;
-}
-
-/* Dark mode for buttons */
-.dark .bg-indigo-600 {
-  @apply bg-indigo-500;
-}
-
-.dark .bg-indigo-600:hover {
-  @apply bg-indigo-600;
-}
-
-/* Dark mode for borders */
-.dark .border-gray-200 {
-  @apply border-gray-700;
-}
-
-.dark .border-gray-300 {
-  @apply border-gray-600;
-}
-
-/* Dark mode for input fields */
 .dark input,
 .dark textarea,
 .dark select {
   @apply bg-gray-800 text-gray-100 border-gray-700;
-}
-
-.dark input::placeholder,
-.dark textarea::placeholder {
-  @apply text-gray-500;
-}
-
-/* Dark mode for modals */
-.dark .bg-black {
-  @apply bg-gray-900;
-}
-
-/* Dark mode for badges and tags */
-.dark .bg-blue-100 {
-  @apply bg-blue-900 text-blue-200;
-}
-
-.dark .bg-green-100 {
-  @apply bg-green-900 text-green-200;
-}
-
-.dark .bg-purple-100 {
-  @apply bg-purple-900 text-purple-200;
-}
-
-/* Dark mode for forms */
-.dark .ring-1,
-.dark .ring-2 {
-  @apply ring-gray-700;
-}
-
-/* Dark mode for specific sections */
-.dark section {
-  @apply bg-gray-900;
-}
-
-/* Ensure hero sections stay dark */
-.dark .bg-gradient-to-br {
-  @apply bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900;
-}
-
-/* Dark mode for stats and cards sections */
-.dark .py-8,
-.dark .py-12,
-.dark .py-16 {
-  @apply bg-slate-950;
 }

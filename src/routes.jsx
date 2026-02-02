@@ -13,30 +13,26 @@ import Profile from "./pages/Profile";
 import MyPosts from "./pages/MyPosts";
 import CustomerFeedback from "./pages/CustomerFeedback";
 import AdminPINManagement from "./pages/AdminPINManagement";
-
-
+import LikedPost from "./pages/LikedPost";   // ✅ IMPORTANT
 
 export const routes = [
+  { path: "/", element: <Home /> },
+
+  { path: "/products", element: <Products /> },
+  { path: "/products/:id", element: <ProductDetail /> },
+
   {
-    path: "/",
-    element: <Home />,
+    path: "/liked-post",
+    element: (
+      <ProtectedRoute>
+        <LikedPost />
+      </ProtectedRoute>
+    ),
   },
-  {
-    path: "/products",
-    element: <Products />,
-  },
-  {
-    path: "/products/:id",
-    element: <ProductDetail />,
-  },
-  {
-    path: "/login",
-    element: <Login />,
-  },
-  {
-    path: "/register",
-    element: <Register />,
-  },
+
+  { path: "/login", element: <Login /> },
+  { path: "/register", element: <Register /> },
+
   {
     path: "/Profile",
     element: (
@@ -45,6 +41,7 @@ export const routes = [
       </ProtectedRoute>
     ),
   },
+
   {
     path: "/create-post",
     element: (
@@ -53,6 +50,7 @@ export const routes = [
       </ProtectedRoute>
     ),
   },
+
   {
     path: "/MyPosts",
     element: (
@@ -61,10 +59,9 @@ export const routes = [
       </ProtectedRoute>
     ),
   },
-  {
-    path: "/admin/login",
-    element: <AdminLogin />,
-  },
+
+  { path: "/admin/login", element: <AdminLogin /> },
+
   {
     path: "/admin/dashboard",
     element: (
@@ -73,6 +70,7 @@ export const routes = [
       </ProtectedAdminRoute>
     ),
   },
+
   {
     path: "/admin/pin-management",
     element: (
@@ -81,12 +79,7 @@ export const routes = [
       </ProtectedAdminRoute>
     ),
   },
-  {
-    path: "/forgot-password",
-    element: <ForgotPassword />,
-  },
-  {
-    path: "/customer-feedback",
-    element: <CustomerFeedback />,
-  },
+
+  { path: "/forgot-password", element: <ForgotPassword /> },
+  { path: "/customer-feedback", element: <CustomerFeedback /> },
 ];
