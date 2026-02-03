@@ -10,6 +10,13 @@ export default function ProductDetail() {
   const [error, setError] = useState(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [shortImageUrl, setShortImageUrl] = useState(null);
+  //zoom
+  const [isZoomOpen, setIsZoomOpen] = useState(false);
+  const [zoomScale, setZoomScale] = useState(1);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [dragging, setDragging] = useState(false);
+  const [start, setStart] = useState({ x: 0, y: 0 });
+
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -67,11 +74,11 @@ export default function ProductDetail() {
 
   // Format price as currency
   const formatPrice = (price) => {
-    const numPrice = parseInt(price, 10);
+    const numPrice = parseFloat(price);
     if (numPrice === 0) {
       return 'FREE';
     }
-    return `₹ ${numPrice.toFixed(0)}`;
+    return `₹ ${numPrice.toFixed(2)}`;
   };
 
   // Format category name
@@ -145,13 +152,16 @@ export default function ProductDetail() {
               {/* Main Image */}
               <div className="mb-4">
                 <img
-                  src={images[selectedImageIndex] || 'https://via.placeholder.com/600x400?text=No+Image'}
+                  src={images[selectedImageIndex] || 'https://via.placeholder.com/600x400'}
                   alt={product.title}
-                  className="w-full h-96 object-contain rounded-lg bg-gray-50"
-                  onError={(e) => {
-                    e.target.src = 'https://via.placeholder.com/600x400?text=No+Image';
+                  className="w-full h-96 object-contain rounded-lg cursor-zoom-in hover:cursor-zoom-in transition-transform hover:scale-105"
+                  onClick={() => {
+                  setIsZoomOpen(true);
+                  setZoomScale(1);
+                  setPosition({ x: 0, y: 0 });
                   }}
                 />
+
               </div>
 
               {/* Thumbnail Images */}
@@ -161,7 +171,7 @@ export default function ProductDetail() {
                     <button
                       key={index}
                       onClick={() => setSelectedImageIndex(index)}
-                      className={`border-2 rounded-lg overflow-hidden ${selectedImageIndex === index
+                      className={`border-2 rounded-lg overflow-hidden transition-all hover:cursor-pointer ${selectedImageIndex === index
                           ? 'border-indigo-600'
                           : 'border-gray-200 hover:border-gray-300'
                         }`}
@@ -169,7 +179,7 @@ export default function ProductDetail() {
                       <img
                         src={imageUrl}
                         alt={`${product.title} ${index + 1}`}
-                        className="w-full h-20 object-contain bg-gray-50"
+                        className="w-full h-20 object-cover"
                         onError={(e) => {
                           e.target.src = 'https://via.placeholder.com/150x100?text=No+Image';
                         }}
@@ -199,7 +209,7 @@ export default function ProductDetail() {
 
               {/* Price */}
               <div className="mb-6">
-              <p className={`text-4xl font-bold ${parseInt(product.price, 10) === 0 ? 'text-green-600' : 'text-indigo-600'}`}>
+              <p className={`text-4xl font-bold ${parseFloat(product.price) === 0 ? 'text-green-600' : 'text-indigo-600'}`}>
   {formatPrice(product.price)}
 </p>
               </div>
@@ -277,6 +287,49 @@ export default function ProductDetail() {
           </div>
         </div>
       </div>
+      {isZoomOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center cursor-default"
+          onClick={() => setIsZoomOpen(false)}
+         >
+         <img
+          src={images[selectedImageIndex]}
+          alt="Zoomed product"
+          className={`max-w-none select-none cursor-zoom-in `}
+          style={{
+          transform: `scale(${zoomScale}) translate(${position.x}px, ${position.y}px)`
+          }}
+          onClick={(e) => e.stopPropagation()}
+          onWheel={(e) => {
+          e.preventDefault();
+          setZoomScale((prev) =>
+             Math.min(Math.max(prev + (e.deltaY < 0 ? 0.2 : -0.2), 1), 3)
+          );
+          }}
+          onMouseDown={(e) => {
+          setDragging(true);
+          setStart({ x: e.clientX - position.x, y: e.clientY - position.y });
+          }}
+          onMouseMove={(e) => {
+          if (!dragging) return;
+          setPosition({
+          x: e.clientX - start.x,
+          y: e.clientY - start.y
+          });
+         }}
+         onMouseUp={() => setDragging(false)}
+         onMouseLeave={() => setDragging(false)}
+         />
+
+         {/* Close button */}
+         <button
+         className="absolute top-6 right-6 text-white text-3xl hover:text-gray-300 transition-colors cursor-pointer"
+         onClick={() => setIsZoomOpen(false)}
+         >
+         ✕
+         </button>
+        </div>
+      )}
     </div>
   );
 }

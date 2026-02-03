@@ -48,6 +48,7 @@ export default function Products() {
 
   // Load liked products from localStorage
   useEffect(() => {
+    
     const stored = JSON.parse(localStorage.getItem('likedPosts')) || [];
     setLikedIds(stored.map(p => p.id));
   }, []);
@@ -119,6 +120,13 @@ export default function Products() {
     setFilteredProducts(filtered);
   }, [products, searchQuery, selectedCategories, selectedBranches, selectedPriceRange, showFreeOnly]);
 
+   const [expandedSections, setExpandedSections] = useState({
+      category: false,
+      branch: false,
+      price: false,
+      free: false,
+    });
+
   const toggleCategory = (category) => {
     setSelectedCategories(prev =>
       prev.includes(category)
@@ -142,6 +150,8 @@ export default function Products() {
     setShowFreeOnly(false);
     setSearchQuery('');
   };
+
+  
 
   const activeFilterCount = selectedCategories.length + selectedBranches.length +
     (selectedPriceRange !== 'all' ? 1 : 0) +
@@ -173,18 +183,15 @@ export default function Products() {
   };
 
   // Filter Sidebar Component
-  const FilterSidebar = ({ isMobile = false }) => {
-    const [expandedSections, setExpandedSections] = useState({
-      category: true,
-      branch: true,
-      price: true,
-      free: true,
-    });
+  const FilterSidebar = ({ expandedSections, setExpandedSections, isMobile = false }) => {
+   
 
     const toggleSection = (section) => {
-      setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
-    };
-
+    setExpandedSections(prev => ({
+      ...prev,
+      [section]: !prev[section],
+    }));
+  };
     return (
       <div className={`bg-white rounded-lg shadow-sm ${isMobile ? 'w-full' : 'w-64'} border border-gray-200`}>
         <div className="p-4 border-b border-gray-200 flex items-center justify-between">
@@ -430,7 +437,8 @@ export default function Products() {
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Filter Sidebar - Desktop */}
           <div className="hidden lg:block">
-            <FilterSidebar />
+            <FilterSidebar expandedSections={expandedSections}
+  setExpandedSections={setExpandedSections}/>
           </div>
 
           <div className="flex-1">

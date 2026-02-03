@@ -192,7 +192,7 @@ export default function Navbar() {
                 {/* Logout */}
                 <button
                   onClick={handleLogoutClick}
-                  className="hover:text-white transition"
+                  className="hover:text-white text-indigo-100  cursor-pointer transition"
                 >
                   Logout
                 </button>
