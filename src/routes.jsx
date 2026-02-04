@@ -13,6 +13,8 @@ import Profile from "./pages/Profile";
 import MyPosts from "./pages/MyPosts";
 import CustomerFeedback from "./pages/CustomerFeedback";
 import AdminPINManagement from "./pages/AdminPINManagement";
+import AdminProducts from "./pages/AdminProducts";
+import AdminProductDetail from "./pages/AdminProductDetail";
 import LikedPost from "./pages/Likedpost";
   // ✅ IMPORTANT
 
@@ -77,6 +79,24 @@ export const routes = [
     element: (
       <ProtectedAdminRoute>
         <AdminPINManagement />
+      </ProtectedAdminRoute>
+    ),
+  },
+
+  {
+    path: "/admin/products",
+    element: (
+      <ProtectedAdminRoute>
+        <AdminProducts />
+      </ProtectedAdminRoute>
+    ),
+  },
+
+  {
+    path: "/admin/products/:id",
+    element: (
+      <ProtectedAdminRoute>
+        <AdminProductDetail />
       </ProtectedAdminRoute>
     ),
   },

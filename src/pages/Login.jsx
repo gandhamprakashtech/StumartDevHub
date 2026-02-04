@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { signIn, resendVerificationEmail } from '../services/authService';
-import { useNavigate, Link } from "react-router";
+import { adminSignIn } from '../services/adminService';
+import { useNavigate, Link } from "react-router-dom";
 
 
 
@@ -8,6 +9,7 @@ import { useNavigate, Link } from "react-router";
 
 export default function Login() {
   const navigate = useNavigate();
+  const [loginType, setLoginType] = useState('student');
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -98,22 +100,35 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      // Call signin service
-      const result = await signIn(
-        formData.email.trim().toLowerCase(),
-        formData.password
-      );
+      if (loginType === 'admin') {
+        const result = await adminSignIn(
+          formData.email.trim().toLowerCase(),
+          formData.password
+        );
 
-      if (result.success) {
-        // Redirect to Profile page on successful login
-        navigate('/Profile');
-      } else {
-        // Check if error is related to email verification
-        if (result.error && result.error.toLowerCase().includes('verify')) {
-          setShowResendEmail(true);
+        if (result.success) {
+          navigate('/admin/dashboard');
+        } else {
+          setErrors({ submit: result.error });
         }
-        // Show error message
-        setErrors({ submit: result.error });
+      } else {
+        // Call student signin service
+        const result = await signIn(
+          formData.email.trim().toLowerCase(),
+          formData.password
+        );
+
+        if (result.success) {
+          // Redirect to Profile page on successful login
+          navigate('/Profile');
+        } else {
+          // Check if error is related to email verification
+          if (result.error && result.error.toLowerCase().includes('verify')) {
+            setShowResendEmail(true);
+          }
+          // Show error message
+          setErrors({ submit: result.error });
+        }
       }
     } catch (error) {
       setErrors({ submit: error.message || 'An unexpected error occurred' });
@@ -165,16 +180,68 @@ export default function Login() {
       <div className="relative z-10 max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Sign in to your  account          </h2>
+            Sign in to your account
+          </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Or{' '}
-            <Link
-              to="/register"
-              className="font-medium text-indigo-600 hover:text-indigo-500"
-            >
-              create a new student account
-            </Link>
+            {loginType === 'student' ? (
+              <>
+                Or{' '}
+                <Link
+                  to="/register"
+                  className="font-medium text-indigo-600 hover:text-indigo-500"
+                >
+                  create a new student account
+                </Link>
+              </>
+            ) : (
+              'Admin access only'
+            )}
           </p>
+        </div>
+
+        <div className="flex items-center justify-center">
+          <div
+            role="tablist"
+            aria-label="Login type"
+            className="inline-grid grid-cols-2 rounded-xl bg-gray-100/80 p-1 shadow-sm ring-1 ring-gray-200"
+          >
+            <button
+              type="button"
+              role="tab"
+              aria-selected={loginType === 'student'}
+              onClick={() => {
+                setLoginType('student');
+                setErrors({});
+                setShowResendEmail(false);
+                setResendMessage('');
+              }}
+              className={`px-4 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 ${
+                loginType === 'student'
+                  ? 'bg-white text-gray-900 shadow ring-1 ring-gray-200'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              Student
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={loginType === 'admin'}
+              onClick={() => {
+                setLoginType('admin');
+                setErrors({});
+                setShowResendEmail(false);
+                setResendMessage('');
+              }}
+              className={`px-4 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 ${
+                loginType === 'admin'
+                  ? 'bg-white text-gray-900 shadow ring-1 ring-gray-200'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              Admin
+            </button>
+          </div>
         </div>
 
         <form className=" mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -283,7 +350,7 @@ export default function Login() {
 
 
           {/* Resend Verification Email Section */}
-          {showResendEmail && (
+          {loginType === 'student' && showResendEmail && (
             <div className="rounded-md bg-yellow-50 p-4 border border-yellow-200">
               <div className="flex">
                 <div className="flex-shrink-0">

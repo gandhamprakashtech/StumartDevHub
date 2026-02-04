@@ -1,5 +1,6 @@
 import { supabase } from './supabaseClient';
 import { getCurrentUser } from './authService';
+import { getCurrentAdmin } from './adminService';
 
 /**
  * Product Service
@@ -392,6 +393,147 @@ export const deleteProduct = async (productId) => {
     };
   } catch (error) {
     console.error('Unexpected error deleting product:', error);
+    return {
+      success: false,
+      error: error.message || 'An unexpected error occurred',
+    };
+  }
+};
+
+/**
+ * Admin: Get all products (including inactive)
+ * @returns {Promise<{success: boolean, data: Array|null, error: string|null}>}
+ */
+export const getAllProductsForAdmin = async () => {
+  try {
+    const { admin, error: adminError } = await getCurrentAdmin();
+
+    if (adminError || !admin) {
+      return {
+        success: false,
+        data: null,
+        error: 'Admin authentication required',
+      };
+    }
+
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching products for admin:', error);
+      return {
+        success: false,
+        data: null,
+        error: error.message || 'Failed to fetch products',
+      };
+    }
+
+    return {
+      success: true,
+      data: data || [],
+      error: null,
+    };
+  } catch (error) {
+    console.error('Unexpected error fetching products for admin:', error);
+    return {
+      success: false,
+      data: null,
+      error: error.message || 'An unexpected error occurred',
+    };
+  }
+};
+
+/**
+ * Admin: Get product detail with seller info
+ * @param {string} productId
+ * @returns {Promise<{success: boolean, data: Object|null, error: string|null}>}
+ */
+export const getProductDetailForAdmin = async (productId) => {
+  try {
+    const { admin, error: adminError } = await getCurrentAdmin();
+
+    if (adminError || !admin) {
+      return {
+        success: false,
+        data: null,
+        error: 'Admin authentication required',
+      };
+    }
+
+    const { data, error } = await supabase
+      .from('products')
+      .select(`
+        *,
+        students:student_pin_number (
+          name,
+          pin_number,
+          email
+        )
+      `)
+      .eq('id', productId)
+      .single();
+
+    if (error) {
+      console.error('Error fetching admin product detail:', error);
+      return {
+        success: false,
+        data: null,
+        error: error.message || 'Product not found',
+      };
+    }
+
+    return {
+      success: true,
+      data,
+      error: null,
+    };
+  } catch (error) {
+    console.error('Unexpected error fetching admin product detail:', error);
+    return {
+      success: false,
+      data: null,
+      error: error.message || 'An unexpected error occurred',
+    };
+  }
+};
+
+/**
+ * Admin: Soft delete product (set status to inactive)
+ * @param {string} productId
+ * @returns {Promise<{success: boolean, error: string|null}>}
+ */
+export const adminDeleteProduct = async (productId) => {
+  try {
+    const { admin, error: adminError } = await getCurrentAdmin();
+
+    if (adminError || !admin) {
+      return {
+        success: false,
+        error: 'Admin authentication required',
+      };
+    }
+
+    const { error } = await supabase
+      .from('products')
+      .update({ status: 'inactive' })
+      .eq('id', productId);
+
+    if (error) {
+      console.error('Error deleting product for admin:', error);
+      return {
+        success: false,
+        error: error.message || 'Failed to delete product',
+      };
+    }
+
+    return {
+      success: true,
+      error: null,
+    };
+  } catch (error) {
+    console.error('Unexpected error deleting product for admin:', error);
     return {
       success: false,
       error: error.message || 'An unexpected error occurred',

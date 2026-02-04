@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { getCurrentAdmin, adminSignOut } from '../services/adminService';
 import { getPINStatistics } from '../services/pinService';
 
@@ -205,7 +205,10 @@ export default function AdminDashboard() {
               <h3 className="font-medium text-gray-900">View Registered Students</h3>
               <p className="text-sm text-gray-500 mt-1">Approve or reject student accounts</p>
             </button>
-            <button className="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-indigo-500 hover:bg-indigo-50 transition-colors text-left">
+            <button
+              onClick={() => navigate('/admin/products')}
+              className="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-indigo-500 hover:bg-indigo-50 transition-colors text-left"
+            >
               <h3 className="font-medium text-gray-900">View Products</h3>
               <p className="text-sm text-gray-500 mt-1">Monitor and moderate product listings</p>
             </button>
