@@ -12,6 +12,9 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-blue-50 to-purple-100 overflow-x-hidden">
+      <h1 className="sr-only">
+        GVL Poly StuMart – AANM & VVRSR Polytechnic Student Marketplace
+      </h1>
       <Hero showScrollIndicator={showScrollIndicator} />
       <FeaturedProducts setShowScrollIndicator={setShowScrollIndicator} />
       <Statistics />
