@@ -16,10 +16,14 @@ import AdminPINManagement from "./pages/AdminPINManagement";
 import AdminProducts from "./pages/AdminProducts";
 import AdminProductDetail from "./pages/AdminProductDetail";
 import LikedPost from "./pages/Likedpost";
-  // ✅ IMPORTANT
+import AboutUs from "./pages/AboutUs";
+import ContactUs from "./pages/ContactUs";
 
 export const routes = [
   { path: "/", element: <Home /> },
+
+  { path: "/about", element: <AboutUs /> },
+  { path: "/contact", element: <ContactUs /> },
 
   { path: "/products", element: <Products /> },
   { path: "/products/:id", element: <ProductDetail /> },
