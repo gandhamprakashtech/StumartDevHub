@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 import { getProducts } from "../services/productService";
+import { getCurrentUser } from "../services/authService";
 import FilterSidebar from "../components/products/FilterSidebar";
 import ProductCard from "../components/products/ProductCard";
 import { useLocalStorage } from "../hooks/useLocalStorage";
@@ -10,15 +11,28 @@ import {
   priceRangeOptions,
 } from "../constants/filterOptions";
 
+const VALID_CATEGORIES = ["books", "stationary", "electronics", "others"];
+
 export default function Products() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [likedIds, setLikedIds] = useLocalStorage("likedPosts", []);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Filter states
+  // Check auth so we only show Liked Posts button when logged in
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { user, error: authError } = await getCurrentUser();
+      setIsAuthenticated(Boolean(user && !authError));
+    };
+    checkAuth();
+  }, []);
+
+  // Filter states — category can be pre-filled from URL (e.g. /products?category=books)
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedBranches, setSelectedBranches] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -31,6 +45,16 @@ export default function Products() {
     price: false,
     free: false,
   });
+
+  // Sync category from URL when user navigates from Home category links
+  useEffect(() => {
+    const cat = searchParams.get("category");
+    if (cat && VALID_CATEGORIES.includes(cat)) {
+      setSelectedCategories([cat]);
+    } else if (!cat) {
+      setSelectedCategories([]);
+    }
+  }, [searchParams]);
 
   // Fetch products
   useEffect(() => {
@@ -290,12 +314,14 @@ export default function Products() {
                 </button>
               )}
             </div>
-            <button
-              onClick={() => navigate("/liked-post")}
-              className="px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 whitespace-nowrap"
-            >
-              ❤️ Liked Posts
-            </button>
+            {isAuthenticated && (
+              <button
+                onClick={() => navigate("/liked-post")}
+                className="px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 whitespace-nowrap"
+              >
+                ❤️ Liked Posts
+              </button>
+            )}
           </div>
         </div>
       </div>
