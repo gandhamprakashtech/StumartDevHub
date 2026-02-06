@@ -86,7 +86,7 @@ export default function Footer() {
       {/* Copyright Bar */}
       <div className="border-t border-white/15 bg-black/10">
         <div className="w-full px-4 py-3 text-center text-[11px] md:text-sm text-blue-100/80">
-          © {new Date().getFullYear()} StuMart. All rights reserved.
+          © Designed by 2023 batch students · GVL Polytechnic
         </div>
       </div>
     </footer>

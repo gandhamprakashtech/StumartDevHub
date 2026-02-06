@@ -105,16 +105,16 @@ export default function Navbar() {
             className="flex items-center gap-3 sm:gap-4 flex-shrink-0"
             onClick={closeMobileMenu}
           >
-             <div className="flex items-center justify-center h-12 w-12 sm:h-14 sm:w-14">
-           <img
-            src="/newlogotransparent.png"
-            alt="AANM & VVRSR StuMart Logo"
-            className="h-full w-full object-contain"
-             width={48}
-             height={48}
-           decoding="async"
-          />
-      </div>
+            <div className="flex items-center justify-center h-14 w-14 sm:h-16 sm:w-16 md:h-20 md:w-20">
+              <img
+                src="/newlogotransparent.png"
+                alt="AANM & VVRSR StuMart Logo"
+                className="h-full w-full object-contain"
+                width={64}
+                height={64}
+                decoding="async"
+              />
+            </div>
             <div className="flex flex-col justify-center min-w-0">
               <span className="text-lg sm:text-xl md:text-2xl font-extrabold text-white leading-tight whitespace-nowrap tracking-wide drop-shadow-sm">
                 AANM & VVRSR
@@ -252,7 +252,7 @@ export default function Navbar() {
           {/* Sidebar Header */}
           <div className="bg-gradient-to-r from-blue-700 via-purple-600 to-purple-700 p-6">
             <div className="flex items-center gap-3">
-              <div className="flex items-center justify-center rounded-full shadow-sm ring-2 ring-white/40 h-14 w-14 overflow-hidden bg-transparent">
+              <div className="flex items-center justify-center rounded-full shadow-sm ring-2 ring-white/40 h-16 w-16 overflow-hidden bg-transparent">
                 <img
                   src="/newlogotransparent.png"
                   alt="StuMart Logo"

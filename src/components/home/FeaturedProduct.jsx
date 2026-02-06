@@ -1,6 +1,9 @@
 import React from "react";
+import { useNavigate } from "react-router";
 
-export default function FeaturedProduct({product, index, currentIndex}) {
+export default function FeaturedProduct({ product, index, currentIndex }) {
+  const navigate = useNavigate();
+
   const formatPrice = (price) => {
     const numPrice = parseInt(price, 10);
     if (numPrice === 0) return "FREE";
