@@ -74,11 +74,11 @@ export default function ProductDetail() {
 
   // Format price as currency
   const formatPrice = (price) => {
-    const numPrice = parseFloat(price);
+    const numPrice = parseInt(price, 10) || 0;
     if (numPrice === 0) {
       return 'FREE';
     }
-    return `₹ ${numPrice.toFixed(2)}`;
+    return `₹ ${numPrice}`;
   };
 
   // Format category name
@@ -209,7 +209,7 @@ export default function ProductDetail() {
 
               {/* Price */}
               <div className="mb-6">
-              <p className={`text-4xl font-bold ${parseFloat(product.price) === 0 ? 'text-green-600' : 'text-indigo-600'}`}>
+              <p className={`text-4xl font-bold ${parseInt(product.price, 10) === 0 ? 'text-green-600' : 'text-indigo-600'}`}>
   {formatPrice(product.price)}
 </p>
               </div>

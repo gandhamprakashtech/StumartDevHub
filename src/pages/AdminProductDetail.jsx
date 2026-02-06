@@ -110,7 +110,7 @@ export default function AdminProductDetail() {
               <div className="bg-gray-50 px-4 py-2 rounded-md">
                 <p className="text-xs text-gray-500">Price</p>
                 <p className="font-semibold text-indigo-600">
-                  {parseInt(product.price, 10) === 0 ? 'FREE' : `₹ ${product.price}`}
+                  {parseInt(product.price, 10) === 0 ? 'FREE' : `₹ ${parseInt(product.price, 10)}`}
                 </p>
               </div>
 

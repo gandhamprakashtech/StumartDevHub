@@ -19,8 +19,9 @@ export default function LikedPost() {
 
   // Filter posts
   const filteredPosts = likedPosts.filter(post => {
-    if (filter === 'free') return parseFloat(post.price) === 0;
-    if (filter === 'paid') return parseFloat(post.price) > 0;
+    const price = parseInt(post.price, 10) || 0;
+    if (filter === 'free') return price === 0;
+    if (filter === 'paid') return price > 0;
     return true;
   });
 
@@ -45,9 +46,9 @@ export default function LikedPost() {
 
   // Format price
   const formatPrice = (price) => {
-    const numPrice = parseFloat(price);
+    const numPrice = parseInt(price, 10) || 0;
     if (numPrice === 0) return 'FREE';
-    return `₹ ${numPrice.toFixed(2)}`;
+    return `₹ ${numPrice}`;
   };
 
   return (
@@ -112,7 +113,7 @@ export default function LikedPost() {
                       : 'text-gray-600 hover:bg-gray-100'
                   }`}
                 >
-                  Free ({likedPosts.filter(p => parseFloat(p.price) === 0).length})
+                  Free ({likedPosts.filter(p => (parseInt(p.price, 10) || 0) === 0).length})
                 </button>
                 <button
                   onClick={() => setFilter('paid')}
@@ -122,7 +123,7 @@ export default function LikedPost() {
                       : 'text-gray-600 hover:bg-gray-100'
                   }`}
                 >
-                  Paid ({likedPosts.filter(p => parseFloat(p.price) > 0).length})
+                  Paid ({likedPosts.filter(p => (parseInt(p.price, 10) || 0) > 0).length})
                 </button>
               </div>
 
