@@ -13,8 +13,15 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-blue-50 to-purple-100 overflow-x-hidden">
       <h1 className="sr-only">
-        GVL Poly StuMart – AANM & VVRSR Polytechnic Student Marketplace
+        GVL Poly Student Marketplace – AANM & VVRSR Polytechnic
       </h1>
+      <div className="mx-auto max-w-4xl px-4 pt-4 text-center text-sm text-slate-700">
+        <p>Official student marketplace for GVL Polytechnic (AANM & VVRSR).</p>
+        <p>
+          This platform is not affiliated with Gallymart or any commercial store.
+          It is exclusively built for GVL Polytechnic students.
+        </p>
+      </div>
       <Hero showScrollIndicator={showScrollIndicator} />
       <FeaturedProducts setShowScrollIndicator={setShowScrollIndicator} />
       <Statistics />
