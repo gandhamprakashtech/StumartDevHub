@@ -501,7 +501,7 @@ export default function AdminPINManagement() {
                   name="joiningYear"
                   value={formData.joiningYear}
                   onChange={handleChange}
-                  placeholder="e.g., 2025"
+                  placeholder="e.g., 2023"
                   min="2000"
                   max="2100"
                   className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${

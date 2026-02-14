@@ -65,7 +65,7 @@ export default function ContactUs() {
             Get in touch
           </h1>
           <p className="text-lg text-gray-600 max-w-xl mx-auto">
-            Reach out for support, feedback, or partnership. StuMart is run by CSE 2025 final-year students at GVL Polytechnic.
+            Reach out for support, feedback, or partnership. StuMart is run by CSE 2023 batch final-year students at GVL Polytechnic.
           </p>
         </header>
 
@@ -169,7 +169,7 @@ export default function ContactUs() {
         {/* Footer note */}
         <footer className="text-center pt-6 border-t border-gray-200">
           <p className="text-gray-600 mb-5">
-            StuMart is designed by CSE students (2025 batch, final year) for GVL Polytechnic (AANM & VVRSR).
+            StuMart is designed by CSE students (2023 batch, final year) for GVL Polytechnic (AANM & VVRSR).
           </p>
           <Link
             to="/about"

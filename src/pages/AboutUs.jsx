@@ -24,14 +24,15 @@ export default function AboutUs() {
               Our story
             </h2>
             <h3 className="text-2xl font-bold text-gray-900 mt-1">
-              Designed by CSE students — 2025 batch, final year
+              Designed by CSE students — 2023 batch, final year
             </h3>
           </div>
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-8">
             <p className="text-gray-700 leading-relaxed mb-4">
               StuMart was conceived, designed, and developed by{" "}
               <strong className="text-gray-900">Computer Science & Engineering (CSE) students</strong> of the{" "}
-              <strong className="text-gray-900">2025 batch</strong> in their final year—a real-world project that serves their own campus community.
+              <strong className="text-gray-900">2023
+                 batch</strong> in their final year—a real-world project that serves their own campus community.
             </p>
             <p className="text-gray-700 leading-relaxed">
               We believe in <strong className="text-gray-900">students helping students</strong>. Whether it’s books, stationery, electronics, or other essentials, StuMart makes it simple to buy and sell within the college community in a safe, trusted environment.
